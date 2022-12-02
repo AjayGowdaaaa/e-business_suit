@@ -5,51 +5,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /*
- * 29/11/2022
- * Admin acces is working fine
- * default pages also working fine
- *  NOTE-
- *  1- Register page not working
- *  2- User access is not working
+ * 2/12/2022
+ * Note:
+ * 	1- All access working fine
+ *  2- Registering user using admin credential
+ *  
  */
-@SuppressWarnings("deprecation")
+
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter{ //extends WebSecurityConfigurerAdapter
-
-	@Autowired
-	private UserDetailsService userDetailsService;
+public class WebSecurityConfiguration { 
 
 	//Its a default Spring Security Interface uses to do default Authentication
-
-	private static final String[] WHITE_LIST_URLS = {
-			"/ebs/wc",
-			"/ebs/home"
-			
-			
-	};
-	private static final String[] USER_LIST_URLS = {
-			"/ebs/user",
-			"/ebs/user/{userName}"
-
-	};
-	private static final String[] ADMIN_LIST_URLS = {
-			"/ebs/**",
-			"/ebs/register",  
-			"/ebs/user",
-			"/ebs/user/{userName}"
-	};
-
+	@Autowired
+	private UserDetailsService userDetailsService;
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -64,20 +41,31 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter{ //ex
 		provider.setPasswordEncoder(new BCryptPasswordEncoder());
 		return provider;
 	}
-
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	private static final String[] WHITE_LIST_URLS = {
+			"/ebs/wc",
+			"/ebs/home"	
+	};
+	private static final String[] USER_LIST_URLS = {
+			"/ebs/user",
+			"/ebs/user/{userName}"
+	};
+	private static final String[] ADMIN_LIST_URLS = {
+			"/ebs/**"
+	};
+	
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
+	{
 		http.csrf().disable()
 		.authorizeRequests()
 		.antMatchers(WHITE_LIST_URLS).permitAll()
-		.antMatchers(USER_LIST_URLS).hasAuthority("user")
-		.antMatchers(ADMIN_LIST_URLS).hasAuthority("admin")	
+		.antMatchers(USER_LIST_URLS).access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+		.antMatchers(ADMIN_LIST_URLS).access("hasRole('ROLE_ADMIN')")
 		.anyRequest()
 		.authenticated()
 		.and()
 		.httpBasic();
+		return http.build();
 	}
-
-
 
 }

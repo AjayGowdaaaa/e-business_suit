@@ -34,7 +34,7 @@ public class UserServiceImplimentation implements UserService {
 		}else {
 			user.setEmail(userModel.getEmail().toLowerCase());
 			user.setUserName(userModel.getUserName().toLowerCase());
-			user.setRole(userModel.getRole().toLowerCase());
+			user.setRole("ROLE_"+userModel.getRole().toUpperCase());
 			if (userModel.getPassword().equals(userModel.getMatchingPassword())) {
 				user.setPassword(passwordEncoder.encode(userModel.getPassword()));
 			}else {
