@@ -1,0 +1,13 @@
+http
+		.csrf().disable()
+		.authorizeRequests()
+		.antMatchers(HttpMethod.GET, WHITE_LIST_URLS).permitAll()
+		.antMatchers(USER_LIST_URLS).access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+		.antMatchers(ADMIN_LIST_URLS).access("hasRole('ROLE_ADMIN')")
+		.anyRequest()
+		.authenticated()
+		.and()
+		.formLogin();
+		//to give custom mapping for login   
+		//.loginPage(page name);
+		return http.build();
