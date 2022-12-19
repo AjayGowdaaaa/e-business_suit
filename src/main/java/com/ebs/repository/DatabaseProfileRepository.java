@@ -7,10 +7,9 @@ import com.ebs.entity.NewDatabaseProfile;
 import com.ebs.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface DatabaseProfileRepository extends JpaRepository<NewDatabaseProfile,String>{
 
-	User findByUserName(String userName);
-	User findByEmail(String email);
+	
 
 	
 	

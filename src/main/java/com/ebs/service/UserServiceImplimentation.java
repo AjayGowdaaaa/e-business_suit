@@ -11,15 +11,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ebs.custom.service.CustomUserDetails;
+import com.ebs.entity.NewDatabaseProfile;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
 import com.ebs.repository.UserRepository;
+import com.ebs.repository.DatabaseProfileRepository;
 
 @Service
 public class UserServiceImplimentation implements UserService {
 
 	@Autowired
 	UserRepository userRepo;
+	@Autowired
+	DatabaseProfileRepository dbRepo;
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	
@@ -52,6 +56,17 @@ public class UserServiceImplimentation implements UserService {
 	public User getUserByUserName(String userName) {
 		User user = userRepo.findByUserName(userName);
 		return user;
+	}
+
+
+	@Override
+	public NewDatabaseProfile createdatabase(NewDatabaseProfile newDatabaseProfile) {
+		System.out.println("new database created");
+		NewDatabaseProfile np = newDatabaseProfile;
+//		NewDatabaseProfile  newuser = new NewDatabaseProfile();
+		np=dbRepo.save(newDatabaseProfile);
+		
+		return np;
 	}
 
 
