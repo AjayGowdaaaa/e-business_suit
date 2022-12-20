@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+<<<<<<< HEAD
 import com.ebs.entity.NewDatabaseProfile;
+=======
+>>>>>>> d166c42dfe7ab839eb2702758a80a1775e9cc220
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
 import com.ebs.service.UserService;
