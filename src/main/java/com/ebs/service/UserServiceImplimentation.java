@@ -56,7 +56,17 @@ public class UserServiceImplimentation implements UserService {
 
 
 	
-
+	@Override
+	public User updatePassword(long id, String password) {
+	User user=userRepo.findByid(id);
+	user.setId(id);
+	user.setPassword(passwordEncoder.encode(password));
+	//logger.info("1");
+	userRepo.save(user);
+	
+	
+		return user;
+	}
 	
 
 

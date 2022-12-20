@@ -9,5 +9,5 @@ public interface UserService {
 	User register(UserModel userModel);
 
 	User getUserByUserName(String userName);
-
+	User updatePassword(long id, String password);
 }

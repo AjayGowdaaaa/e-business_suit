@@ -50,7 +50,13 @@ public class EBS_Controller {
 		User user = service.getUserByUserName(userName);
 		return new ResponseEntity<User>(user, HttpStatus.ACCEPTED);
 	}
-
+	@GetMapping("/changepassword")
+	public ResponseEntity<?> changePassword( @PathVariable long id,@PathVariable String password) throws Exception{
+		User user=service.updatePassword(id,password);
+		//logger.info("controller");
+		return new ResponseEntity<User>(user, HttpStatus.CREATED);
+		
+	}
 	/*
 	 * Converted a servlet into Controller
 	 * NOTE = Need to do Write Business Logic and Need to change get and post method
