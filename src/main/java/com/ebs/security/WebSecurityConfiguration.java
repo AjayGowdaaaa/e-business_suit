@@ -43,7 +43,8 @@ public class WebSecurityConfiguration {
 	}
 	private static final String[] WHITE_LIST_URLS = {
 			"/ebs/wc",
-			"/ebs/home"	
+			"/ebs/home"	,
+			"/ebs/register"	
 	};
 	private static final String[] USER_LIST_URLS = {
 			"/ebs/user",

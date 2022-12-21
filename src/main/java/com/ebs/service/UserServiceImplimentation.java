@@ -11,8 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ebs.custom.service.CustomUserDetails;
+//import com.ebs.entity.ChangePassword_Optim;
+import com.ebs.entity.GroupCreation;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
+//import com.ebs.repository.ChangePaswordRepository;
+import com.ebs.repository.GroupRepository;
 import com.ebs.repository.UserRepository;
 
 @Service
@@ -22,8 +26,12 @@ public class UserServiceImplimentation implements UserService {
 	UserRepository userRepo;
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
+	@Autowired
+    GroupRepository groupRepository;
+	//@Autowired
+//	ChangePaswordRepository OptimRepo;
 	@Override
+	
 	public User register(UserModel userModel) {
 		System.out.println("Register Method Calling");
 		User user = new User();
@@ -57,17 +65,104 @@ public class UserServiceImplimentation implements UserService {
 
 	
 	@Override
-	public User updatePassword(long id, String password) {
-	User user=userRepo.findByid(id);
+	public User updatePassword(long id, String password) throws Exception {
+	if(userRepo.findByid(id).equals(null)) {
+		throw new Exception("Entered null value , Please Enter Valid ID\"");
+	}
+	User user= userRepo.findByid(id);
+		
 	user.setId(id);
 	user.setPassword(passwordEncoder.encode(password));
-	//logger.info("1");
+	
 	userRepo.save(user);
 	
 	
 		return user;
 	}
 	
+	
+	@Override
+	public GroupCreation newGroup(GroupCreation groupCreation) {
+		GroupCreation savedGroup = groupCreation;
+		if (!(groupRepository.findByGroupName(savedGroup.getGroupName()) == null))
+		{
+			throw new DuplicateKeyException("GroupName Already Exsists");
+		}else {
+		  savedGroup=groupRepository.save(groupCreation);
+		}
+		return savedGroup;
+	}
+	/*
+	 * Deleting a Group using GroupName
+	 */
+	@Override
+	public void deleteGroupbyName(String groupName) {
+	GroupCreation gc =	groupRepository.findByGroupName(groupName);
+	groupRepository.delete(gc);
+	}
+	/*
+	 * Assign Programs to the group
+	 */
+	@Override
+	public GroupCreation assignPrograms(String groupName,  GroupCreation groupCreation) {
+		GroupCreation savedPrograms = groupCreation;
+		savedPrograms=groupRepository.findByGroupName(savedPrograms.getGroupName());
+		savedPrograms.setGroupName(groupCreation.getGroupName());	
+		savedPrograms.setAssignPrograms(groupCreation.getAssignPrograms());
+		
+		groupRepository.save(savedPrograms);
+		
+		return savedPrograms;
+	}
+	
+
+	@Override
+	public GroupCreation modifyGroup(String groupName, GroupCreation groupCreation) {
+		GroupCreation modifySaved = groupCreation;
+		modifySaved=groupRepository.findByGroupName(modifySaved.getGroupName());
+		modifySaved.setGroupName(groupCreation.getGroupName());	
+		modifySaved.setAssignPrograms(groupCreation.getAssignPrograms());
+		modifySaved.setDescription(groupCreation.getDescription());
+		groupRepository.save(modifySaved);
+		return modifySaved;
+	}
+
+
+	@Override
+	public GroupCreation getGroupCreationByGroupName(String groupName) {
+		GroupCreation gc = groupRepository.findByGroupName(groupName);
+		return gc;
+	}
+
+
+	@Override
+	public User changePassword(String userName, User user) {
+		User userclass=user;
+		userclass=userRepo.findByUserName(userName);
+		userclass.setPassword(passwordEncoder.encode(user.getPassword()));
+		userRepo.save(userclass);
+		return userclass;
+	}
+
+
+//	@Override
+//	public ChangePassword_Optim changePassword_optim(String userName, ChangePassword_Optim changePasswordOptims) {
+//		ChangePassword_Optim ChangePasswordOptim_store= changePasswordOptims;
+//		ChangePasswordOptim_store=OptimRepo.findByUserName(userName);
+//		
+//		if (changePasswordOptims.getPassword().equals(changePasswordOptims.getConformPassword())) 
+//		{
+//			ChangePasswordOptim_store.setPassword(passwordEncoder.encode(changePasswordOptims.getPassword()));
+//			ChangePasswordOptim_store.setConformPassword(passwordEncoder.encode(changePasswordOptims.getConformPassword()));
+//		}
+//		else {
+//			throw new InputMismatchException();
+//		}
+//
+//		OptimRepo.save(changePasswordOptims);
+//		return changePasswordOptims;
+//	}
+
 
 
 
