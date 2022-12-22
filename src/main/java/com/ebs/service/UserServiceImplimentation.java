@@ -136,11 +136,17 @@ public class UserServiceImplimentation implements UserService {
 
 
 	@Override
-	public User changePassword(String userName, User user) {
+	public User changePassword(String userName, User user) throws Exception {
 		User userclass=user;
 		userclass=userRepo.findByUserName(userName);
+		if(userclass!=null) 
+		{
 		userclass.setPassword(passwordEncoder.encode(user.getPassword()));
 		userRepo.save(userclass);
+		}
+		else {
+			throw new Exception(" username not found");
+		}
 		return userclass;
 	}
 

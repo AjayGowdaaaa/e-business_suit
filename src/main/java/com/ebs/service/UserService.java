@@ -22,7 +22,7 @@ public interface UserService {
 
 	GroupCreation modifyGroup(String groupName, GroupCreation groupCreation);
 
-	User changePassword(String userName, User user);
+	User changePassword(String userName, User user) throws Exception;
 
 //	ChangePassword_Optim changePassword_optim(String userName, ChangePassword_Optim changePasswordOptims);
 }
