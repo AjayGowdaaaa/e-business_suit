@@ -1,5 +1,7 @@
 package com.ebs.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 //import com.ebs.entity.ChangePassword_Optim;
 import com.ebs.entity.GroupCreation;
+import com.ebs.entity.Programs;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
 import com.ebs.service.UserService;
@@ -59,7 +62,13 @@ public class EBS_Controller {
 	
 	@PostMapping("/changepassword/{userName}")
 	public ResponseEntity<?> changePassword( @PathVariable("userName") String userName, @RequestBody User user) {
-		User users = service.changePassword(userName,user);;
+		User users = null;
+		try {
+			users = service.changePassword(userName,user);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return new ResponseEntity<User>(users, HttpStatus.CREATED);
 		
@@ -73,6 +82,20 @@ public class EBS_Controller {
 //		return new ResponseEntity<ChangePassword_Optim>(changePasswordOptims, HttpStatus.CREATED);
 //		
 //	}
+	
+//	@PostMapping("/newprogram")
+//	public ResponseEntity<?> newProgram( @RequestBody Programs program) {
+//		Programs savedprogram = service.new_program_creation( program);
+//		return new ResponseEntity<Programs>(program, HttpStatus.CREATED);
+//	}
+	
+//	@GetMapping("/assingprogram/{groupName}")
+//	public ResponseEntity<List<Programs>> assingIngProgram(@RequestBody Programs program,@PathVariable("groupName")  String groupName){
+//		List<Programs> listofprograms=service.assingProgram(program,groupName);
+//		return new ResponseEntity<List<Programs>>(listofprograms,HttpStatus.ACCEPTED);
+//	}
+//	
+	
 		@PostMapping("/newGroup")
 		public ResponseEntity<?> newGroup( @RequestBody GroupCreation groupCreation) {
 			GroupCreation savedGroup = service.newGroup(groupCreation);
@@ -81,11 +104,18 @@ public class EBS_Controller {
 		/*
 		 * Assigning the programs to the Group
 		 */
-		@PostMapping("/assignPrograms/{groupName}")
-		public ResponseEntity<?> assignPrograms( @RequestBody GroupCreation groupCreation,@PathVariable("groupName") String groupName) {
-			GroupCreation savedPrograms = service.assignPrograms(groupName, groupCreation);
-			return new ResponseEntity<GroupCreation>(savedPrograms, HttpStatus.CREATED);
+		@GetMapping("/assigngroups")
+		public ResponseEntity<List<GroupCreation>> assigningGroups( @RequestBody GroupCreation groupCreation) {
+			List<GroupCreation> listofgroups = service.assignGroups(groupCreation);
+			return new ResponseEntity<List<GroupCreation>>(listofgroups, HttpStatus.CREATED);
 		}
+		@GetMapping("/getallprograms")
+		public ResponseEntity<List<Programs>> getallprograms(@RequestBody Programs programs){
+			List<Programs> listofprograms=service.getPrograms(programs);
+			return new ResponseEntity<List<Programs>>(listofprograms,HttpStatus.CREATED);
+			
+		}
+		
 		/*
 		 * 
 		 */
