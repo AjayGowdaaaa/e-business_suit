@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ebs.entity.DatabaseProfile;
+import com.ebs.entity.manager.EntityManagerUtils;
 import com.ebs.exception.BusinessException;
 import com.ebs.repository.DatabaseProfileRepository;
 
@@ -13,28 +14,32 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
+	@Autowired 
+	EntityManagerUtils emUtils;
 
-	@Autowired
-	PasswordEncoder passwordEncoder;
+
+	@Override
+	public void setRepository(String url){
+		dbpRepo = (DatabaseProfileRepository) emUtils.getJpaFactory(url).getRepository(DatabaseProfileRepository.class);
+	}
 
 	@Override
 	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) {
 		//Setting DatabaseProfile attributes and creating url
-		databaseProfile.setUrl(
-				"jdbc:oracle:thin:"+
-						databaseProfile.getDatabaseUserName()+ "/" +
-						databaseProfile.getDatabaseUserPassword()+ "@" +
-						databaseProfile.getServerName()+ ":" +
-						databaseProfile.getPortnumber()+ ":" +
-						databaseProfile.getSid()
+		databaseProfile.setDbConnectionURL(
+						databaseProfile.getAPI()+":"+
+						databaseProfile.getDatabase()+"://"+
+						databaseProfile.getServerName()+":"+
+						databaseProfile.getPortnumber()+"/"+
+						databaseProfile.getSchema()
 				);
 		databaseProfile  = dbpRepo.save(databaseProfile);
-//		(mBaseConnect +
-//				mUserID + "/" +
-//				mPassword + "@" +
-//				mNetAddr + ":" +
-//				mPort+ ":" +
-//				mSid)
+		//		(mBaseConnect +
+		//				mUserID + "/" +
+		//				mPassword + "@" +
+		//				mNetAddr + ":" +
+		//				mPort+ ":" +
+		//				mSid)
 		return databaseProfile;
 	}
 
@@ -45,15 +50,15 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	}
 
 	@Override
-	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile) {
-		DatabaseProfile existingDbP = dbpRepo.findById(profileName).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
+	public DatabaseProfile updateDbProfile(int id, DatabaseProfile databaseProfile) {
+		DatabaseProfile existingDbP = dbpRepo.findById(id).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
 		existingDbP.setDatabaseUserName(databaseProfile.getDatabaseUserName());
 		existingDbP.setDatabaseUserPassword(databaseProfile.getDatabaseUserPassword());
-		
+
 		existingDbP.setServerName(databaseProfile.getServerName());
 		existingDbP.setSid(databaseProfile.getSid());
 		existingDbP.setPortnumber(databaseProfile.getPortnumber());
-		
+
 		try {
 			existingDbP = dbpRepo.save(existingDbP);
 		} catch (BusinessException e) {
