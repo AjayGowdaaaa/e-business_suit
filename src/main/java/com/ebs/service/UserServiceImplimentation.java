@@ -4,13 +4,9 @@ import java.util.InputMismatchException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.ebs.custom.service.CustomUserDetails;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
 import com.ebs.repository.UserRepository;
