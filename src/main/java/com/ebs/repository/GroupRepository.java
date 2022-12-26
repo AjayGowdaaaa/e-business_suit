@@ -11,13 +11,19 @@ import com.ebs.entity.GroupCreation;
 @Repository
 public interface GroupRepository extends JpaRepository<GroupCreation, Long>{
 
-	GroupCreation save(GroupCreation groupCreation);
+	
 	GroupCreation findByGroupName(String groupName);
 	
 	 @Query("SELECT groupcreation.groupName FROM  GroupCreation groupcreation")
-	List<Object> findallgroups(GroupCreation groupCreation);
-//	 @Query("select user.firstName, user.lastName from UserEntity user where user.userId = :userId")
-//	 List<Object[]> getUserEntityFullNameById(@Param("userId") String userId);
+	List<GroupCreation> findallgroups(GroupCreation groupCreation);
+
+	 
+	 @Query("SELECT entity.programs FROM  GroupCreation entity")
+	List findallprograms(GroupCreation groupCreation);
+	 @Query("select entity.programs FROM  GroupCreation entity where entity.groupName = :groupName")
+	List<GroupCreation> getPrograms(String groupName);
+	 
+//	 @Query("select entity.programs FROM  GroupCreation entity where entity.groupName = :groupName")
+//	List<String> findprograms(String groupName);
 	
-	//List<GroupCreation> findAllGroups();
 }

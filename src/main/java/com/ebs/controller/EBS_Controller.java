@@ -1,5 +1,6 @@
 package com.ebs.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ebs.entity.Assigned_Programs;
 //import com.ebs.entity.ChangePassword_Optim;
 import com.ebs.entity.GroupCreation;
-import com.ebs.entity.Programs;
+//import com.ebs.entity.Programs;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
 import com.ebs.service.UserService;
@@ -109,12 +111,46 @@ public class EBS_Controller {
 			List<GroupCreation> listofgroups = service.assignGroups(groupCreation);
 			return new ResponseEntity<List<GroupCreation>>(listofgroups, HttpStatus.CREATED);
 		}
-		@GetMapping("/getallprograms")
-		public ResponseEntity<List<Programs>> getallprograms(@RequestBody Programs programs){
-			List<Programs> listofprograms=service.getPrograms(programs);
-			return new ResponseEntity<List<Programs>>(listofprograms,HttpStatus.CREATED);
+		 
+			@GetMapping("/assignprograms")
+			public ResponseEntity<List<GroupCreation>> assigningprograms( @RequestBody GroupCreation groupCreation) {
+				List<GroupCreation> listofprograms = service.getPrograms(groupCreation);
+				return new ResponseEntity<List<GroupCreation>>(listofprograms, HttpStatus.CREATED);
+			}
 			
-		}
+		/**
+		 * 	
+		 * 
+		 */
+			
+			@GetMapping("/programs/{groupName}")
+			public ResponseEntity<List<GroupCreation>> programs1( @RequestBody String groupName ) throws Exception {
+				ArrayList<GroupCreation> listofprograms = (ArrayList<GroupCreation>) service.get_Particular_Program(groupName);
+				return new ResponseEntity<List<GroupCreation>>(listofprograms, HttpStatus.CREATED);
+			}
+			
+			
+			
+			
+			@PostMapping("/save")
+			public ResponseEntity<?> saveAssigned_Programs(@RequestBody Assigned_Programs assigned_Programs) throws Exception {
+				Assigned_Programs listofAssignprograms =service.AssignedPrograms(assigned_Programs);
+				return new ResponseEntity<Assigned_Programs>(HttpStatus.ACCEPTED);
+	
+			
+			}
+			
+			
+			
+			
+			
+		
+//		@GetMapping("/getallprograms")
+//		public ResponseEntity<List<Programs>> getallprograms(@RequestBody Programs programs){
+//			List<Programs> listofprograms=service.getPrograms(programs);
+//			return new ResponseEntity<List<Programs>>(listofprograms,HttpStatus.CREATED);
+//			
+//		}
 		
 		/*
 		 * 

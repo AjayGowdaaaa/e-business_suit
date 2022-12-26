@@ -1,25 +1,24 @@
 package com.ebs.service;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.ebs.custom.service.CustomUserDetails;
+import com.ebs.entity.Assigned_Programs;
 //import com.ebs.entity.ChangePassword_Optim;
 import com.ebs.entity.GroupCreation;
-import com.ebs.entity.Programs;
+//import com.ebs.entity.Programs;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
+import com.ebs.repository.AssignedPrograms_Repository;
 //import com.ebs.repository.ChangePaswordRepository;
 import com.ebs.repository.GroupRepository;
-import com.ebs.repository.ProgramsRepository;
+//import com.ebs.repository.ProgramsRepository;
 import com.ebs.repository.UserRepository;
 
 @Service
@@ -30,13 +29,12 @@ public class UserServiceImplimentation implements UserService {
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	@Autowired
-    GroupRepository groupRepository;
-	@Autowired
-	ProgramsRepository programsRepository;
-	//@Autowired
-//	ChangePaswordRepository OptimRepo;
+	GroupRepository groupRepository;
+@Autowired
+AssignedPrograms_Repository assingRepo;
+
 	@Override
-	
+
 	public User register(UserModel userModel) {
 		System.out.println("Register Method Calling");
 		User user = new User();
@@ -53,9 +51,9 @@ public class UserServiceImplimentation implements UserService {
 			}else {
 				throw new InputMismatchException();
 			}
-//			user.setPassword(passwordEncoder.encode(userModel.getPassword()));
+			//			user.setPassword(passwordEncoder.encode(userModel.getPassword()));
 			userRepo.save(user);
-			
+
 		}
 		return user;
 	}
@@ -68,72 +66,64 @@ public class UserServiceImplimentation implements UserService {
 	}
 
 
-	
+
 	@Override
 	public User updatePassword(long id, String password) throws Exception {
-	if(userRepo.findByid(id).equals(null)) {
-		throw new Exception("Entered null value , Please Enter Valid ID\"");
-	}
-	User user= userRepo.findByid(id);
-		
-	user.setId(id);
-	user.setPassword(passwordEncoder.encode(password));
-	
-	userRepo.save(user);
-	
-	
+		if(userRepo.findByid(id).equals(null)) {
+			throw new Exception("Entered null value , Please Enter Valid ID\"");
+		}
+		User user= userRepo.findByid(id);
+
+		user.setId(id);
+		user.setPassword(passwordEncoder.encode(password));
+
+		userRepo.save(user);
+
+
 		return user;
 	}
-	
-	
+
+
 	@Override
 	public GroupCreation newGroup(GroupCreation groupCreation) {
+		ArrayList<String> pgm = new ArrayList<String>();
+		pgm.addAll(groupCreation.getPrograms());
 		GroupCreation savedGroup = groupCreation;
-		if (!(groupRepository.findByGroupName(savedGroup.getGroupName()) == null))
-		{
-			throw new DuplicateKeyException("GroupName Already Exsists");
-		}else {
-		  savedGroup=groupRepository.save(groupCreation);
-		}
+		savedGroup.setPrograms(pgm);
+		savedGroup=groupRepository.save(groupCreation);
 		return savedGroup;
 	}
+
+	@Override
+	public Assigned_Programs AssignedPrograms(Assigned_Programs programs) {
+		ArrayList<String> pgm = new ArrayList<String>();
+		pgm.addAll(programs.getPrograms());
+		Assigned_Programs assig=new Assigned_Programs();
+		assig.setPrograms(pgm);
+		assig=assingRepo.save(programs);
+		
+		return  assig;
+	}
+	
+	
 	/*
 	 * Deleting a Group using GroupName
 	 */
 	@Override
 	public void deleteGroupbyName(String groupName) {
-	GroupCreation gc =	groupRepository.findByGroupName(groupName);
-	groupRepository.delete(gc);
+		GroupCreation gc =	groupRepository.findByGroupName(groupName);
+		groupRepository.delete(gc);
 	}
-	/*
-	 * Assign Programs to the group
-	 */
-//	@Override
-//	public GroupCreation assignPrograms(String groupName,  GroupCreation groupCreation) {
-//
-//		GroupCreation savedPrograms = groupCreation;
-////		savedPrograms=groupRepository.findByGroupName(savedPrograms.getGroupName());
-////		savedPrograms.setGroupName(groupCreation.getGroupName());	
-////		savedPrograms.setAssignPrograms(groupCreation.getAssignPrograms());
-////		
-////		groupRepository.save(savedPrograms);
-////		  
-////		List<GroupCreation> allgroups=groupRepository.findAllGroups();
-////		List<GroupCreation> particular_group=(List<GroupCreation>) groupRepository.findByGroupName(groupName);
-////		
-//		return savedPrograms;
-		
-		
-		
-	//}
 	
+
+
 
 	@Override
 	public GroupCreation modifyGroup(String groupName, GroupCreation groupCreation) {
 		GroupCreation modifySaved = groupCreation;
 		modifySaved=groupRepository.findByGroupName(modifySaved.getGroupName());
 		modifySaved.setGroupName(groupCreation.getGroupName());	
-		modifySaved.setAssignPrograms(groupCreation.getAssignPrograms()); 
+		modifySaved.setPrograms(groupCreation.getPrograms()); 
 		modifySaved.setDescription(groupCreation.getDescription());
 		groupRepository.save(modifySaved);
 		return modifySaved;
@@ -153,82 +143,72 @@ public class UserServiceImplimentation implements UserService {
 		userclass=userRepo.findByUserName(userName);
 		if(userclass!=null) 
 		{
-		userclass.setPassword(passwordEncoder.encode(user.getPassword()));
-		userRepo.save(userclass);
+			userclass.setPassword(passwordEncoder.encode(user.getPassword()));
+			userRepo.save(userclass);
 		}
 		else {
 			throw new Exception(" username not found");
 		}
 		return userclass;
 	}
+	//	@Override
+	//	public List get_Particular_Program(String groupName,GroupCreation groupCreation) {
+	//		List program=(List) groupRepository.findByGroupName(groupName);
+	//		
+	//			if(program!=null) {
+	//			program=groupRepository.findprograms(groupName);
+	//		}
+	//		return program;
+	//	}
 
-
-//	@Override
-//	public Programs new_program_creation(Programs programs) {
-//		Programs savedprogram = programs;
-//		try {
-//			if (!(programsRepository.findByGroupName(savedprogram.getGroupName()) == null))
-//			{
-//				throw new DuplicateKeyException("GroupName Already Exsists");
-//			}else {
-//			  savedprogram=programsRepository.save(programs);
-//			}
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return savedprogram;
-//		
-//	}
+	//	@Override
+	//	public Programs new_program_creation(Programs programs) {
+	//		Programs savedprogram = programs;
+	//		try {
+	//			if (!(programsRepository.findByGroupName(savedprogram.getGroupName()) == null))
+	//			{
+	//				throw new DuplicateKeyException("GroupName Already Exsists");
+	//			}else {
+	//			  savedprogram=programsRepository.save(programs);
+	//			}
+	//		} catch (Exception e) {
+	//			// TODO Auto-generated catch block
+	//			e.printStackTrace();
+	//		}
+	//		return savedprogram;
+	//		
+	//	}
 
 
 	@Override
 	public List assignGroups( GroupCreation groupCreation) {
-	List group=groupRepository.findallgroups(groupCreation);
+		List group=groupRepository.findallgroups(groupCreation);
 		return group;
 	}
-//public List<Programs> assingProgram(Programs programs,String groupName){
-//	List program=null;
-//		program=programsRepository.findByGroupName(groupName);
-//		if(program!=null) {
-//		List<Programs>	p=programs.getPrograms();
-//		}
-//		return program;
 	
-	
-	
-	
-//}
-//	@Override
-//	public List assignGroups( GroupCreation groupCreation) {
-//	List group=groupRepository.findallgroups(groupCreation);
-//		return group;
-//	}
+	//		return program;
+
 
 	@Override
-	public List getPrograms(Programs programs) {
-		List group=programsRepository.findallprograms(programs);
-		return group;
+	public List getPrograms(GroupCreation groupCreation) {
+		List programs =groupRepository.findallprograms(groupCreation);
+		return programs;
 	}
 
-//	@Override
-//	public ChangePassword_Optim changePassword_optim(String userName, ChangePassword_Optim changePasswordOptims) {
-//		ChangePassword_Optim ChangePasswordOptim_store= changePasswordOptims;
-//		ChangePasswordOptim_store=OptimRepo.findByUserName(userName);
-//		
-//		if (changePasswordOptims.getPassword().equals(changePasswordOptims.getConformPassword())) 
-//		{
-//			ChangePasswordOptim_store.setPassword(passwordEncoder.encode(changePasswordOptims.getPassword()));
-//			ChangePasswordOptim_store.setConformPassword(passwordEncoder.encode(changePasswordOptims.getConformPassword()));
-//		}
-//		else {
-//			throw new InputMismatchException();
-//		}
-//
-//		OptimRepo.save(changePasswordOptims);
-//		return changePasswordOptims;
-//	}
 
+	@Override
+	public List get_Particular_Program(String groupName) throws Exception {
+		List<GroupCreation> program=null;
+				program=(List) groupRepository.findByGroupName(groupName);
+				if(program!=null) {
+					program=groupRepository.getPrograms(groupName);
+				}
+				return program;
+	}
+
+
+
+	
 
 
 
