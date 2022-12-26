@@ -19,22 +19,22 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan("ord.paulushc")
-@PropertySource("file:./database.properties")
+@ComponentScan//("com.mysql.cj")
+@PropertySource("file:./application.properties")
 @EnableJpaRepositories(
-		basePackages = "org.paulushc",
+		basePackages = "com.mysql.cj",
 		entityManagerFactoryRef = "mainEntityManager",
 		transactionManagerRef = "mainTransactionManager")
 public class DatabaseConfig {
 
 	//Database configuration
-	@Value("${spring.datasource.driver-class-name}")
+	@Value("${main.db.driver}")
 	private String driver;
-	@Value("${spring.datasource.url}")
+	@Value("${main.db.url}")
 	private String url;
-	@Value("${spring.datasource.username}")
+	@Value("${main.db.username}")
 	private String username;
-	@Value("${spring.datasource.password}")
+	@Value("${main.db.password}")
 	private String password;
 	
 	//#Hibernate Configurations
