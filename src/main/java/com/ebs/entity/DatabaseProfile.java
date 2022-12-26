@@ -10,14 +10,17 @@ import lombok.Data;
 public class DatabaseProfile {
 
 	@Id
-    private String profileName;
-    private String databaseUserName;
-    private String  databaseUserPassword;
-    private String archiveUnionUser;
-    private String archiveUserPassword;
-    private String serverName;
-    private int sid;
-    private int portnumber;
-    private String url;
-    
+	private String profileName;
+//Admin created user
+	private String databaseUserName;
+	private String  databaseUserPassword;
+//Database user
+	private String archiveUnionUser;
+	private String archiveUserPassword;
+
+	private String serverName;
+	private int sid;
+	private int portnumber;
+	private String url;
+
 }
