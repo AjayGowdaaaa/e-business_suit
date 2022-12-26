@@ -12,13 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/*
- * 2/12/2022
- * Note:
- * 	1- All access working fine
- *  2- Registering user using admin credential
- *  
- */
 
 @Configuration
 @EnableWebSecurity
@@ -43,7 +36,8 @@ public class WebSecurityConfiguration {
 	}
 	private static final String[] WHITE_LIST_URLS = {
 			"/ebs/wc",
-			"/ebs/home"	
+			"/ebs/home",
+			"/dbp/**"
 	};
 	private static final String[] USER_LIST_URLS = {
 			"/ebs/user",

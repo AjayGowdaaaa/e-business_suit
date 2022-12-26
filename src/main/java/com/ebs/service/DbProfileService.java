@@ -9,20 +9,32 @@ import com.ebs.exception.BusinessException;
 import com.ebs.repository.DatabaseProfileRepository;
 
 @Service
-public class DbProfileServiceImplimentation implements DatabaseProfileService {
+public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
+
 	@Override
 	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) {
-		//Admin Creating User
-		databaseProfile.setUserPassword(passwordEncoder.encode(databaseProfile.getUserPassword()));
+		//Setting DatabaseProfile attributes and creating url
+		databaseProfile.setUrl(
+				"jdbc:oracle:thin:"+
+						databaseProfile.getDatabaseUserName()+ "/" +
+						databaseProfile.getDatabaseUserPassword()+ "@" +
+						databaseProfile.getServerName()+ ":" +
+						databaseProfile.getPortnumber()+ ":" +
+						databaseProfile.getSid()
+				);
 		databaseProfile  = dbpRepo.save(databaseProfile);
-		 
+//		(mBaseConnect +
+//				mUserID + "/" +
+//				mPassword + "@" +
+//				mNetAddr + ":" +
+//				mPort+ ":" +
+//				mSid)
 		return databaseProfile;
 	}
 
@@ -35,11 +47,13 @@ public class DbProfileServiceImplimentation implements DatabaseProfileService {
 	@Override
 	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile) {
 		DatabaseProfile existingDbP = dbpRepo.findById(profileName).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
-		existingDbP.setDatabaseUser(databaseProfile.getDatabaseUser());
-		existingDbP.setUserPassword(databaseProfile.getUserPassword());
+		existingDbP.setDatabaseUserName(databaseProfile.getDatabaseUserName());
+		existingDbP.setDatabaseUserPassword(databaseProfile.getDatabaseUserPassword());
+		
 		existingDbP.setServerName(databaseProfile.getServerName());
 		existingDbP.setSid(databaseProfile.getSid());
 		existingDbP.setPortnumber(databaseProfile.getPortnumber());
+		
 		try {
 			existingDbP = dbpRepo.save(existingDbP);
 		} catch (BusinessException e) {
@@ -55,7 +69,16 @@ public class DbProfileServiceImplimentation implements DatabaseProfileService {
 			throw new BusinessException("Delete DatabaseProfile ","profileName not found");		
 		}
 		dbpRepo.delete(dbp);
-		
+
 	}
+
+	@Override
+	public void connectionWithURL(DatabaseProfile databaseProfile) {
+
+
+	}
+
+
+
 
 }

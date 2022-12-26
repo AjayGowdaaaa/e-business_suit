@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ebs.entity.DatabaseProfile;
-import com.ebs.service.DatabaseProfileService;
-import com.ebs.service.DbProfileServiceImplimentation;
+import com.ebs.service.DatabaseProfileServiceInterface;
+import com.ebs.service.DbProfileService;
 
 @RestController
 @RequestMapping("/dbp")
 public class DatabaseProfieController {
 
 	@Autowired
-	private DatabaseProfileService service;
+	private DatabaseProfileServiceInterface service;
 	
 	@PostMapping("/createDbProfile")
 	public ResponseEntity<?> createDbProfile( @RequestBody DatabaseProfile databaseProfile) {
@@ -34,7 +34,7 @@ public class DatabaseProfieController {
 		DatabaseProfile dbProfile = service.getDatabaseProfileByProfileName(profileName);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.ACCEPTED);
 	}
-	@PutMapping("/updateDbProfile")
+	@PutMapping("/updateDbProfile/{profileName}")
 	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName,@RequestBody DatabaseProfile databaseProfile) {	
 		DatabaseProfile dbProfile = service.updateDbProfile(profileName, databaseProfile);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
