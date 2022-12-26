@@ -67,21 +67,7 @@ AssignedPrograms_Repository assingRepo;
 
 
 
-	@Override
-	public User updatePassword(long id, String password) throws Exception {
-		if(userRepo.findByid(id).equals(null)) {
-			throw new Exception("Entered null value , Please Enter Valid ID\"");
-		}
-		User user= userRepo.findByid(id);
-
-		user.setId(id);
-		user.setPassword(passwordEncoder.encode(password));
-
-		userRepo.save(user);
-
-
-		return user;
-	}
+	
 
 
 	@Override
@@ -151,33 +137,7 @@ AssignedPrograms_Repository assingRepo;
 		}
 		return userclass;
 	}
-	//	@Override
-	//	public List get_Particular_Program(String groupName,GroupCreation groupCreation) {
-	//		List program=(List) groupRepository.findByGroupName(groupName);
-	//		
-	//			if(program!=null) {
-	//			program=groupRepository.findprograms(groupName);
-	//		}
-	//		return program;
-	//	}
-
-	//	@Override
-	//	public Programs new_program_creation(Programs programs) {
-	//		Programs savedprogram = programs;
-	//		try {
-	//			if (!(programsRepository.findByGroupName(savedprogram.getGroupName()) == null))
-	//			{
-	//				throw new DuplicateKeyException("GroupName Already Exsists");
-	//			}else {
-	//			  savedprogram=programsRepository.save(programs);
-	//			}
-	//		} catch (Exception e) {
-	//			// TODO Auto-generated catch block
-	//			e.printStackTrace();
-	//		}
-	//		return savedprogram;
-	//		
-	//	}
+	
 
 
 	@Override
@@ -186,7 +146,7 @@ AssignedPrograms_Repository assingRepo;
 		return group;
 	}
 	
-	//		return program;
+
 
 
 	@Override

@@ -15,19 +15,19 @@ public interface UserService {
 	User register(UserModel userModel);
 
 	User getUserByUserName(String userName);
-	User updatePassword(long id, String password) throws Exception, Throwable;
+	
 	
 	//Group Creation
 	GroupCreation newGroup(GroupCreation groupCreation);
-	List  assignGroups( GroupCreation groupCreation);
-	List  getPrograms( GroupCreation groupCreation);
-	List  get_Particular_Program( String groupName) throws Exception;
+	
 	GroupCreation getGroupCreationByGroupName(String groupName);
 	void deleteGroupbyName(String groupName);
 	GroupCreation modifyGroup(String groupName, GroupCreation groupCreation);
 	User changePassword(String userName, User user) throws Exception;
 //Assigned Programs
 	Assigned_Programs AssignedPrograms(Assigned_Programs programs);
-
+	List  assignGroups( GroupCreation groupCreation);
+	List  getPrograms( GroupCreation groupCreation);
+	List  get_Particular_Program( String groupName) throws Exception;
 
 }
