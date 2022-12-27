@@ -2,7 +2,7 @@ package com.ebs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.sql.*;
 import com.ebs.entity.DatabaseProfile;
 import com.ebs.exception.BusinessException;
 import com.ebs.repository.DatabaseProfileRepository;
@@ -12,27 +12,32 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
-//	@Autowired 
-//	EntityManagerUtils emUtils;
-
-
-//	@Override
-//	public void setRepository(String url){
-//		dbpRepo = (DatabaseProfileRepository) emUtils.getJpaFactory(url).getRepository(DatabaseProfileRepository.class);
-//	}
+	
+	@Override
+	public void connection(String profileName) throws Exception {
+	DatabaseProfile dbp =	dbpRepo.findByProfileName(profileName);
+		Class.forName("com.mysql.jdbc.Driver");  
+//		Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");    
+		Connection connection=DriverManager.getConnection(dbp.getDbConnectionURL(), dbp.getDatabaseUserName(),dbp.getDatabaseUserPassword());   
+		Statement statement=connection.createStatement();		
+		ResultSet rs=statement.executeQuery("select * from mytable");  
+		while(rs.next())  
+			System.out.println(rs.getInt(1)+"  "+rs.getString(2));  
+			connection.close();  
+	}
 
 	@Override
 	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) {
 		//Setting DatabaseProfile attributes and creating url
 		databaseProfile.setDbConnectionURL(
-						databaseProfile.getAPI()+":"+
+				databaseProfile.getAPI()+":"+
 						databaseProfile.getDatabase()+"://"+
 						databaseProfile.getServerName()+":"+
 						databaseProfile.getPortnumber()+"/"+
 						databaseProfile.getSchema()
 				);
 		databaseProfile  = dbpRepo.save(databaseProfile);
-		
+
 		return databaseProfile;
 	}
 
@@ -69,14 +74,5 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		dbpRepo.delete(dbp);
 
 	}
-
-//	@Override
-//	public void connectionWithURL(DatabaseProfile databaseProfile) {
-//
-//
-//	}
-
-
-
 
 }

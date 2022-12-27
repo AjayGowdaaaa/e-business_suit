@@ -11,4 +11,6 @@ public interface DatabaseProfileServiceInterface {
 	void deleteDbProfile (String profileName);
 	//void setRepository(String url);
 	//void connectionWithURL (DatabaseProfile databaseProfile);
+	
+	void connection(String profileName) throws Exception;
 }
