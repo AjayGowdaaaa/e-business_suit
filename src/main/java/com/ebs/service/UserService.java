@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.ebs.entity.Assigned_Programs;
 //import com.ebs.entity.ChangePassword_Optim;
-import com.ebs.entity.GroupCreation;
+import com.ebs.entity.GroupData;
 //import com.ebs.entity.Programs;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
@@ -18,16 +18,16 @@ public interface UserService {
 	
 	
 	//Group Creation
-	GroupCreation newGroup(GroupCreation groupCreation);
+	GroupData newGroup(GroupData groupData);
 	
-	GroupCreation getGroupCreationByGroupName(String groupName);
+	GroupData getGroupCreationByGroupName(String groupName);
 	void deleteGroupbyName(String groupName);
-	GroupCreation modifyGroup(String groupName, GroupCreation groupCreation);
+	GroupData modifyGroup(String groupName, GroupData groupData);
 	User changePassword(String userName, User user) throws Exception;
 //Assigned Programs
-	Assigned_Programs AssignedPrograms(Assigned_Programs programs);
-	List  assignGroups( GroupCreation groupCreation);
-	List  getPrograms( GroupCreation groupCreation);
+	Assigned_Programs AssignedPrograms(Assigned_Programs programs) throws Throwable;
+	List  assignGroups( GroupData groupData) throws Exception, Throwable;
+	List  getPrograms( GroupData groupData) throws Throwable;
 	List  get_Particular_Program( String groupName) throws Exception;
 
 }

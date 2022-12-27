@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.ebs.entity.Assigned_Programs;
 //import com.ebs.entity.ChangePassword_Optim;
-import com.ebs.entity.GroupCreation;
+import com.ebs.entity.GroupData;
 //import com.ebs.entity.Programs;
 import com.ebs.entity.User;
 import com.ebs.model.UserModel;
@@ -71,25 +71,15 @@ AssignedPrograms_Repository assingRepo;
 
 
 	@Override
-	public GroupCreation newGroup(GroupCreation groupCreation) {
+	public GroupData newGroup(GroupData groupData) {
 		ArrayList<String> pgm = new ArrayList<String>();
-		pgm.addAll(groupCreation.getPrograms());
-		GroupCreation savedGroup = groupCreation;
+		pgm.addAll(groupData.getPrograms());
+		GroupData savedGroup = groupData;
 		savedGroup.setPrograms(pgm);
-		savedGroup=groupRepository.save(groupCreation);
+		savedGroup=groupRepository.save(groupData);
 		return savedGroup;
 	}
 
-	@Override
-	public Assigned_Programs AssignedPrograms(Assigned_Programs programs) {
-		ArrayList<String> pgm = new ArrayList<String>();
-		pgm.addAll(programs.getPrograms());
-		Assigned_Programs assig=new Assigned_Programs();
-		assig.setPrograms(pgm);
-		assig=assingRepo.save(programs);
-		
-		return  assig;
-	}
 	
 	
 	/*
@@ -97,7 +87,7 @@ AssignedPrograms_Repository assingRepo;
 	 */
 	@Override
 	public void deleteGroupbyName(String groupName) {
-		GroupCreation gc =	groupRepository.findByGroupName(groupName);
+		GroupData gc =	groupRepository.findByGroupName(groupName);
 		groupRepository.delete(gc);
 	}
 	
@@ -105,20 +95,20 @@ AssignedPrograms_Repository assingRepo;
 
 
 	@Override
-	public GroupCreation modifyGroup(String groupName, GroupCreation groupCreation) {
-		GroupCreation modifySaved = groupCreation;
+	public GroupData modifyGroup(String groupName, GroupData groupData) {
+		GroupData modifySaved = groupData;
 		modifySaved=groupRepository.findByGroupName(modifySaved.getGroupName());
-		modifySaved.setGroupName(groupCreation.getGroupName());	
-		modifySaved.setPrograms(groupCreation.getPrograms()); 
-		modifySaved.setDescription(groupCreation.getDescription());
+		modifySaved.setGroupName(groupData.getGroupName());	
+		modifySaved.setPrograms(groupData.getPrograms()); 
+		modifySaved.setDescription(groupData.getDescription());
 		groupRepository.save(modifySaved);
 		return modifySaved;
 	}
 
 
 	@Override
-	public GroupCreation getGroupCreationByGroupName(String groupName) {
-		GroupCreation gc = groupRepository.findByGroupName(groupName);
+	public GroupData getGroupCreationByGroupName(String groupName) {
+		GroupData gc = groupRepository.findByGroupName(groupName);
 		return gc;
 	}
 
@@ -138,35 +128,81 @@ AssignedPrograms_Repository assingRepo;
 		return userclass;
 	}
 	
-
+//Fetching all groups 
 
 	@Override
-	public List assignGroups( GroupCreation groupCreation) {
-		List group=groupRepository.findallgroups(groupCreation);
-		return group;
+	public List assignGroups( GroupData groupData) throws Throwable {
+		List listofgroup=null;
+				try{listofgroup=groupRepository.findallgroups(groupData);
+				}
+				catch (Exception e) {
+					throw new Exception("Somithing went wrong");	
+				}
+					
+				if(listofgroup.isEmpty()) {
+					throw new Exception("the List is emity ,Add some data");
+				}
+		return listofgroup;
 	}
 	
 
 
-
+//Fetching all programs
 	@Override
-	public List getPrograms(GroupCreation groupCreation) {
-		List programs =groupRepository.findallprograms(groupCreation);
-		return programs;
+	public List getPrograms(GroupData groupData) throws Throwable {
+		List listofprograms =null;
+		try{listofprograms=groupRepository.findallprograms(groupData);}
+		catch (Exception e) {
+			throw new Exception("Somithing went wrong");	
+		}
+			
+		if(listofprograms.isEmpty()) {
+			throw new Exception("the List of programs is emity ,Add some data");
+		}
+		return listofprograms;
 	}
 
-
+//Fetching the particular Program
 	@Override
 	public List get_Particular_Program(String groupName) throws Exception {
-		List<GroupCreation> program=null;
-				program=(List) groupRepository.findByGroupName(groupName);
-				if(program!=null) {
-					program=groupRepository.getPrograms(groupName);
+		List<GroupData> getprograms=null;
+				getprograms=(List) groupRepository.findByGroupName(groupName);
+				if(getprograms!=null) 
+				{
+					try {
+					getprograms=groupRepository.getPrograms(groupName);
+					}catch (Exception e) {
+						throw new Exception("Somithing went wrong");	
+					}
+					if(getprograms.isEmpty()) {
+						throw new Exception("the List of programs is emity ,Add some data");
+					}
 				}
-				return program;
+//				else {
+//					throw new Exception("groupName not found in data base");
+//				}
+				return getprograms;
 	}
-
-
+//saving the Assigned programs in Seperate programs
+	
+	@Override
+	public Assigned_Programs AssignedPrograms(Assigned_Programs programs) throws Exception {
+		ArrayList<String> pgm = new ArrayList<String>();
+		try{pgm.addAll(programs.getPrograms());}
+		catch (Exception e) {
+			throw new Exception("Somithing went wrong");
+		}
+		Assigned_Programs assig=new Assigned_Programs();
+		try{
+			assig.setPrograms(pgm);}
+		catch (Exception e) {
+			throw new Exception("Somithing went wrong");
+		}
+		assig=assingRepo.save(programs);
+		
+		return  assig;
+	}
+	
 
 	
 
