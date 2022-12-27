@@ -20,6 +20,17 @@ public class User {
 	private String email;
 	private String password;
 	private String role;
+	
+	public User(Long id, String userName, String email, String password, String role) {
+		super();
+		this.id = id;
+		this.userName = userName;
+		this.email = email;
+		this.password = password;
+		this.role = role;
+	}
+
+	
 	public Long getId() {
 		return id;
 	}
@@ -53,14 +64,6 @@ public class User {
 	public User() {
 		super();
 		
-	}
-	public User(Long id, String userName, String email, String password, String role) {
-		super();
-		this.id = id;
-		this.userName = userName;
-		this.email = email;
-		this.password = password;
-		this.role = role;
 	}
 
 	

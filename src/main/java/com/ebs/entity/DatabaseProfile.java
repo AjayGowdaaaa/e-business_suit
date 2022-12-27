@@ -4,11 +4,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
+@Schema
 @Entity
+@Table(name = "database_profile")
 public class DatabaseProfile {
 
 	@Id
@@ -16,12 +20,13 @@ public class DatabaseProfile {
 	private int id;
 	
 	private String profileName;
-	
+	//Database Validation
 	private String databaseUserName;
 	private String  databaseUserPassword;
-	
+	//
 	private String archiveUnionUser;
 	private String archiveUserPassword;
+	
 	//Connection 1
 	private String API;
 	private String database;
@@ -30,15 +35,19 @@ public class DatabaseProfile {
 	private int portnumber;
 	private String schema;
 	//Connection 2
-	String dbConnectionURL;
+	private String dbConnectionURL;
+	
+	private boolean configureNAA;
+	private boolean archiveDatabase;
+	private boolean connected;
 	
 	
-	public String getDbConnectionURL() {
-		return dbConnectionURL;
+	
+	//Constructor
+	public DatabaseProfile() {
+		super();
 	}
-	public void setDbConnectionURL(String dbConnectionURL) {
-		this.dbConnectionURL = dbConnectionURL;
-	}
+	//Getter and Setter Methods
 	public int getId() {
 		return id;
 	}
@@ -111,8 +120,31 @@ public class DatabaseProfile {
 	public void setSchema(String schema) {
 		this.schema = schema;
 	}
+	public String getDbConnectionURL() {
+		return dbConnectionURL;
+	}
+	public void setDbConnectionURL(String dbConnectionURL) {
+		this.dbConnectionURL = dbConnectionURL;
+	}
+//	public boolean isConfigureNAA() {
+//		return configureNAA;
+//	}
+//	public void setConfigureNAA(boolean configureNAA) {
+//		this.configureNAA = configureNAA;
+//	}
+//	public boolean isArchiveDatabase() {
+//		return archiveDatabase;
+//	}
+//	public void setArchiveDatabase(boolean archiveDatabase) {
+//		this.archiveDatabase = archiveDatabase;
+//	}
+//	public boolean isConnected() {
+//		return connected;
+//	}
+//	public void setConnected(boolean connected) {
+//		this.connected = connected;
+//	}
 	
 	
-	
-	
+
 }

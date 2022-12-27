@@ -1,11 +1,9 @@
 package com.ebs.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ebs.entity.DatabaseProfile;
-import com.ebs.entity.manager.EntityManagerUtils;
 import com.ebs.exception.BusinessException;
 import com.ebs.repository.DatabaseProfileRepository;
 
@@ -14,14 +12,14 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
-	@Autowired 
-	EntityManagerUtils emUtils;
+//	@Autowired 
+//	EntityManagerUtils emUtils;
 
 
-	@Override
-	public void setRepository(String url){
-		dbpRepo = (DatabaseProfileRepository) emUtils.getJpaFactory(url).getRepository(DatabaseProfileRepository.class);
-	}
+//	@Override
+//	public void setRepository(String url){
+//		dbpRepo = (DatabaseProfileRepository) emUtils.getJpaFactory(url).getRepository(DatabaseProfileRepository.class);
+//	}
 
 	@Override
 	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) {
@@ -34,12 +32,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 						databaseProfile.getSchema()
 				);
 		databaseProfile  = dbpRepo.save(databaseProfile);
-		//		(mBaseConnect +
-		//				mUserID + "/" +
-		//				mPassword + "@" +
-		//				mNetAddr + ":" +
-		//				mPort+ ":" +
-		//				mSid)
+		
 		return databaseProfile;
 	}
 
@@ -50,7 +43,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	}
 
 	@Override
-	public DatabaseProfile updateDbProfile(int id, DatabaseProfile databaseProfile) {
+	public DatabaseProfile updateDbProfile(Long id, DatabaseProfile databaseProfile) {
 		DatabaseProfile existingDbP = dbpRepo.findById(id).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
 		existingDbP.setDatabaseUserName(databaseProfile.getDatabaseUserName());
 		existingDbP.setDatabaseUserPassword(databaseProfile.getDatabaseUserPassword());
@@ -71,17 +64,17 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	public void deleteDbProfile(String profileName) {
 		DatabaseProfile dbp = dbpRepo.findByProfileName(profileName);
 		if (dbp==null) {
-			throw new BusinessException("Delete DatabaseProfile ","profileName not found");		
+			throw new BusinessException("Failed to Delete DatabaseProfile ","profileName not found");		
 		}
 		dbpRepo.delete(dbp);
 
 	}
 
-	@Override
-	public void connectionWithURL(DatabaseProfile databaseProfile) {
-
-
-	}
+//	@Override
+//	public void connectionWithURL(DatabaseProfile databaseProfile) {
+//
+//
+//	}
 
 
 

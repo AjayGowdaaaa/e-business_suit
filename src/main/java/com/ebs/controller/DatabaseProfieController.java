@@ -36,7 +36,7 @@ public class DatabaseProfieController {
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.ACCEPTED);
 	}
 	@PutMapping("/updateDbProfile/{profileName}")
-	public ResponseEntity<?> updateDbProfile(@PathVariable  int id,@RequestBody DatabaseProfile databaseProfile) {	
+	public ResponseEntity<?> updateDbProfile(@PathVariable  Long id,@RequestBody DatabaseProfile databaseProfile) {	
 		DatabaseProfile dbProfile = service.updateDbProfile(id, databaseProfile);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 	}
