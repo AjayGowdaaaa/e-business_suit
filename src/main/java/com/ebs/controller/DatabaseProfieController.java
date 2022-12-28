@@ -1,5 +1,7 @@
 package com.ebs.controller;
 
+import java.sql.ResultSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +46,11 @@ public class DatabaseProfieController {
 	public ResponseEntity<?> deleteDbProfile(@PathVariable("profileName") String profileName) {
 		service.deleteDbProfile(profileName);
 		return new ResponseEntity<String>("profileName ---> Deleted Sucessfuly",HttpStatus.ACCEPTED);
-
+	}
+	@GetMapping("/con/{profileName}")
+	public ResponseEntity<?> connection(@PathVariable("profileName") String profileName) throws Exception {	
+		String res =service.connection(profileName);
+		return new ResponseEntity<>(res, HttpStatus.ACCEPTED);
 	}
 	
 }

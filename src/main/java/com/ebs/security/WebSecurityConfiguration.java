@@ -35,13 +35,14 @@ public class WebSecurityConfiguration {
 		return provider;
 	}
 	private static final String[] WHITE_LIST_URLS = {
-			"/user/default"
+			"/user/**",
+			"/dbp/**"
 	};
 	private static final String[] USER_LIST_URLS = {
 			
 	};
 	private static final String[] ADMIN_LIST_URLS = {
-			"/user/**"
+			
 	};
 	
 	@Bean

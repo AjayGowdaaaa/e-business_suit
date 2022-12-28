@@ -1,5 +1,7 @@
 package com.ebs.service;
 
+import java.sql.ResultSet;
+
 import com.ebs.entity.DatabaseProfile;
 
 public interface DatabaseProfileServiceInterface {
@@ -12,5 +14,5 @@ public interface DatabaseProfileServiceInterface {
 	//void setRepository(String url);
 	//void connectionWithURL (DatabaseProfile databaseProfile);
 	
-	void connection(String profileName) throws Exception;
+	String connection(String profileName) throws Exception;
 }
