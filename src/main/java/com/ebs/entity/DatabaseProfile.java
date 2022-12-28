@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.validator.constraints.UniqueElements;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -76,7 +78,7 @@ public class DatabaseProfile {
 		return archiveUnionUser;
 	}
 	public void setArchiveUnionUser(String archiveUnionUser) {
-		this.archiveUnionUser = archiveUnionUser;
+		this.archiveUnionUser = archiveUnionUser; 
 	}
 	public String getArchiveUserPassword() {
 		return archiveUserPassword;
@@ -126,24 +128,24 @@ public class DatabaseProfile {
 	public void setDbConnectionURL(String dbConnectionURL) {
 		this.dbConnectionURL = dbConnectionURL;
 	}
-//	public boolean isConfigureNAA() {
-//		return configureNAA;
-//	}
-//	public void setConfigureNAA(boolean configureNAA) {
-//		this.configureNAA = configureNAA;
-//	}
-//	public boolean isArchiveDatabase() {
-//		return archiveDatabase;
-//	}
-//	public void setArchiveDatabase(boolean archiveDatabase) {
-//		this.archiveDatabase = archiveDatabase;
-//	}
-//	public boolean isConnected() {
-//		return connected;
-//	}
-//	public void setConnected(boolean connected) {
-//		this.connected = connected;
-//	}
+	public boolean isConfigureNAA() {
+		return configureNAA;
+	}
+	public void setConfigureNAA(boolean configureNAA) {
+		this.configureNAA = configureNAA;
+	}
+	public boolean isArchiveDatabase() {
+		return archiveDatabase;
+	}
+	public void setArchiveDatabase(boolean archiveDatabase) {
+		this.archiveDatabase = archiveDatabase;
+	}
+	public boolean isConnected() {
+		return connected;
+	}
+	public void setConnected(boolean connected) {
+		this.connected = connected;
+	}
 	
 	
 

@@ -1,10 +1,16 @@
 package com.ebs.service;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.sql.*;
+
 import com.ebs.entity.DatabaseProfile;
 import com.ebs.exception.BusinessException;
+import com.ebs.exception.DbConnectionException;
 import com.ebs.repository.DatabaseProfileRepository;
 
 @Service
@@ -12,22 +18,25 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
-	
-	@Override
-	public void connection(String profileName) throws Exception {
-	DatabaseProfile dbp =	dbpRepo.findByProfileName(profileName);
-		Class.forName("com.mysql.jdbc.Driver");  
-//		Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");    
-		Connection connection=DriverManager.getConnection(dbp.getDbConnectionURL(), dbp.getDatabaseUserName(),dbp.getDatabaseUserPassword());   
-		Statement statement=connection.createStatement();		
-		ResultSet rs=statement.executeQuery("select * from mytable");  
-		while(rs.next())  
-			System.out.println(rs.getInt(1)+"  "+rs.getString(2));  
-			connection.close();  
-	}
 
 	@Override
-	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) {
+	public ResultSet connection(String profileName) throws Exception {
+		DatabaseProfile dbp =    dbpRepo.findByProfileName(profileName);
+		Class.forName("com.mysql.cj.jdbc.Driver");  
+  //   Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");    
+		Connection connection=DriverManager.getConnection(dbp.getDbConnectionURL(), dbp.getDatabaseUserName(),dbp.getDatabaseUserPassword());   
+		System.out.println("Connection ----------------> "+connection);
+		Statement statement=connection.createStatement();        
+		ResultSet rs=statement.executeQuery("select * from test ");  
+		while(rs.next())  {
+			System.out.println("--------------------------->"+rs);
+			System.out.println(rs.getInt(1)+"  "+rs.getString(2));  
+		}
+		//connection.close();  
+		return rs;
+	}
+	@Override
+	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
 		//Setting DatabaseProfile attributes and creating url
 		databaseProfile.setDbConnectionURL(
 				databaseProfile.getAPI()+":"+
@@ -37,8 +46,23 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 						databaseProfile.getSchema()
 				);
 		databaseProfile  = dbpRepo.save(databaseProfile);
-
-		return databaseProfile;
+			//	try {
+					Class.forName("com.mysql.cj.jdbc.Driver");  
+					Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
+					if (!(connection == null)) {
+						databaseProfile.setConnected(true);
+						databaseProfile  = dbpRepo.save(databaseProfile);
+					}else {
+						
+						throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+					}
+//				} catch (Exception e) {
+//					dbpRepo.delete(databaseProfile);
+//					e.getMessage();
+//					throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+//
+//				}
+				return databaseProfile;
 	}
 
 	@Override

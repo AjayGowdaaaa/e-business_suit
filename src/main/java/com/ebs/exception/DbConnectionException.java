@@ -1,23 +1,18 @@
 package com.ebs.exception;
 
-import lombok.Data;
-
-@Data
-public class BusinessException extends RuntimeException{
+public class DbConnectionException extends Exception {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7689723270514874053L;
-	
-	
+	private static final long serialVersionUID = 1L;
 	private String errorCode;
 	private String errorMessage;
 	
-	public BusinessException() {
+	public DbConnectionException() {
 		
 	}
-	public BusinessException(String errorCode, String errorMessage) {
+	public DbConnectionException(String errorCode, String errorMessage) {
 		super();
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;
@@ -33,9 +28,6 @@ public class BusinessException extends RuntimeException{
 	}
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
 	}
 	
 }

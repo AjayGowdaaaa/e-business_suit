@@ -35,7 +35,7 @@ public class WebSecurityConfiguration {
 		return provider;
 	}
 	private static final String[] WHITE_LIST_URLS = {
-			"/user/default"
+			"/dbp/**"
 	};
 	private static final String[] USER_LIST_URLS = {
 			

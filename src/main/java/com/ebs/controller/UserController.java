@@ -23,18 +23,6 @@ public class UserController {
 	@Autowired
 	private UserServiceInterface service;
 
-	@GetMapping("/default")
-	public ResponseEntity<?> creatingDefautUser( ) {
-		try {
-			User savingUser = service.creatingDefautUser();
-			return new ResponseEntity<String>("DefautUser Created", HttpStatus.CREATED);
-		} catch (BusinessException e) {
-			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
-			return new ResponseEntity<String>("Failed to Creat", HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			ControllerException ce = new ControllerException("Failed to register User","Something went wrong on Controller");
-			return new ResponseEntity<String>("Failed to Creat", HttpStatus.BAD_REQUEST);		}
-	}
 	
 	@PostMapping("/register")
 	public ResponseEntity<?> register( @RequestBody User user) {

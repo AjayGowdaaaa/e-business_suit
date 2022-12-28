@@ -1,5 +1,6 @@
 package com.ebs.controller;
 
+import java.sql.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ebs.entity.DatabaseProfile;
 import com.ebs.service.DatabaseProfileServiceInterface;
-import com.ebs.service.DbProfileService;
 
 @RestController
 @RequestMapping("/dbp")
@@ -25,7 +25,7 @@ public class DatabaseProfieController {
 	
 	
 	@PostMapping("/createDbProfile")
-	public ResponseEntity<?> createDbProfile( @RequestBody DatabaseProfile databaseProfile) {
+	public ResponseEntity<?> createDbProfile(@RequestBody DatabaseProfile databaseProfile) throws Exception {
 		DatabaseProfile dbProfile = service.createDbProfile(databaseProfile);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 	}
@@ -44,7 +44,11 @@ public class DatabaseProfieController {
 	public ResponseEntity<?> deleteDbProfile(@PathVariable("profileName") String profileName) {
 		service.deleteDbProfile(profileName);
 		return new ResponseEntity<String>("profileName ---> Deleted Sucessfuly",HttpStatus.ACCEPTED);
-
 	}
+	@GetMapping("/con/{profileName}")
+    public ResponseEntity<?> connection(@PathVariable("profileName") String profileName) throws Exception {    
+        ResultSet rs =service.connection(profileName);
+        return new ResponseEntity<ResultSet>(rs, HttpStatus.ACCEPTED);
+    }
 	
 }
