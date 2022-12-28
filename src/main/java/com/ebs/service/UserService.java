@@ -24,10 +24,9 @@ public interface UserService {
 	void deleteGroupbyName(String groupName);
 	GroupData modifyGroup(String groupName, GroupData groupData);
 	User changePassword(String userName, User user) throws Exception;
-//Assigned Programs
-	Assigned_Programs AssignedPrograms(Assigned_Programs programs) throws Throwable;
-	List  assignGroups( GroupData groupData) throws Exception, Throwable;
-	List  getPrograms( GroupData groupData) throws Throwable;
-	List  get_Particular_Program( String groupName) throws Exception;
-
+////Assigned Programs
+//	Assigned_Programs AssignedPrograms(Assigned_Programs programs) throws Throwable;
+//	List  assignGroups( GroupData groupData) throws Exception, Throwable;
+//	List  getPrograms( GroupData groupData) throws Throwable;
+//	List  get_Particular_Program( String groupName) throws Exception;
 }
