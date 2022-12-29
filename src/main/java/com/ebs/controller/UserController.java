@@ -1,7 +1,5 @@
+//Controller
 package com.ebs.controller;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,267 +12,86 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.ebs.entity.Assigned_Programs;
-//import com.ebs.entity.ChangePassword_Optim;
-import com.ebs.entity.GroupCreation;
-//import com.ebs.entity.Programs;
 import com.ebs.entity.User;
-import com.ebs.model.UserModel;
-import com.ebs.service.UserService;
+import com.ebs.exception.BusinessException;
+import com.ebs.exception.ControllerException;
+import com.ebs.service.UserServiceInterface;
 
 @RestController
-@RequestMapping("/ebs")
-public class EBS_Controller {
+@RequestMapping("/user")
+public class UserController {
 
 	@Autowired
-	private UserService service;
-
-
-	@GetMapping("/wc")
-	public String ebs() {
-		return "Welcome to EBS in EBS Controller";
-	}
-	@GetMapping("/home")
-	public String home() {
-		return "Welcome Home in EBS Controller";
-	}
-	@GetMapping("/user")
-	public String user() {
-		return "USER accesing this method in EBS Controller";
-	}
-	@GetMapping("/admin")
-	public String admin() {
-		return "Admin Method Calling";
-	}
+	private UserServiceInterface service;
 
 	@PostMapping("/register")
-	public ResponseEntity<?> register( @RequestBody UserModel userModel) {
-		System.out.println("Register Method Calling");
-		User user = service.register(userModel);
-		return new ResponseEntity<User>(user, HttpStatus.CREATED);
-	}
-
-	@GetMapping("/user/{userName}")
-	public ResponseEntity<?> getUserByUserName(@PathVariable("userName") String userName) {	
-		User user = service.getUserByUserName(userName);
-		return new ResponseEntity<User>(user, HttpStatus.ACCEPTED);
-	}
-	
-	
-	@PostMapping("/changepassword/{userName}")
-	public ResponseEntity<?> changePassword( @PathVariable("userName") String userName, @RequestBody User user) {
-		User users = null;
+	public ResponseEntity<?> register( @RequestBody User user) {
 		try {
-			users = service.changePassword(userName,user);
+			User savingUser = service.register(user);
+			return new ResponseEntity<User>(savingUser, HttpStatus.CREATED);
+		} catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ControllerException ce = new ControllerException("Failed to register User","Something went wrong on Controller");
+			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
 		}
-
-		return new ResponseEntity<User>(users, HttpStatus.CREATED);
-		
 	}
-	
+	@GetMapping("/id/{id}")
+	public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {	
+		try {
+			User user = service.getUserById(id);
+			return new ResponseEntity<User>(user, HttpStatus.ACCEPTED);
+		} catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ControllerException ce = new ControllerException("Failed to get User","Something went wrong on Controller");					
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		}
+	}
 
-//	@PostMapping("/changepasswordOptim/{userName}")
-//	public ResponseEntity<?> changePassword_for_Optim( @PathVariable("userName") String userName, @RequestBody ChangePassword_Optim changePasswordOptim) {
-//		ChangePassword_Optim changePasswordOptims = service.changePassword_optim(userName,changePasswordOptim);;
-//
-//		return new ResponseEntity<ChangePassword_Optim>(changePasswordOptims, HttpStatus.CREATED);
-//		
-//	}
-	
-//	@PostMapping("/newprogram")
-//	public ResponseEntity<?> newProgram( @RequestBody Programs program) {
-//		Programs savedprogram = service.new_program_creation( program);
-//		return new ResponseEntity<Programs>(program, HttpStatus.CREATED);
-//	}
-	
-//	@GetMapping("/assingprogram/{groupName}")
-//	public ResponseEntity<List<Programs>> assingIngProgram(@RequestBody Programs program,@PathVariable("groupName")  String groupName){
-//		List<Programs> listofprograms=service.assingProgram(program,groupName);
-//		return new ResponseEntity<List<Programs>>(listofprograms,HttpStatus.ACCEPTED);
-//	}
-//	
-	
-		@PostMapping("/newGroup")
-		public ResponseEntity<?> newGroup( @RequestBody GroupCreation groupCreation) {
-			GroupCreation savedGroup = service.newGroup(groupCreation);
-			return new ResponseEntity<GroupCreation>(savedGroup, HttpStatus.CREATED);
-		}
-		/*
-		 * Assigning the programs to the Group
-		 */
-		@GetMapping("/assigngroups")
-		public ResponseEntity<List<GroupCreation>> assigningGroups( @RequestBody GroupCreation groupCreation) {
-			List<GroupCreation> listofgroups = service.assignGroups(groupCreation);
-			return new ResponseEntity<List<GroupCreation>>(listofgroups, HttpStatus.CREATED);
-		}
-		 
-			@GetMapping("/assignprograms")
-			public ResponseEntity<List<GroupCreation>> assigningprograms( @RequestBody GroupCreation groupCreation) {
-				List<GroupCreation> listofprograms = service.getPrograms(groupCreation);
-				return new ResponseEntity<List<GroupCreation>>(listofprograms, HttpStatus.CREATED);
-			}
-			
-		/**
-		 * 	
-		 * 
-		 */
-			
-			@GetMapping("/programs/{groupName}")
-			public ResponseEntity<List<GroupCreation>> programs1( @RequestBody String groupName ) throws Exception {
-				ArrayList<GroupCreation> listofprograms = (ArrayList<GroupCreation>) service.get_Particular_Program(groupName);
-				return new ResponseEntity<List<GroupCreation>>(listofprograms, HttpStatus.CREATED);
-			}
-			
-			
-			
-			
-			@PostMapping("/save")
-			public ResponseEntity<?> saveAssigned_Programs(@RequestBody Assigned_Programs assigned_Programs) throws Exception {
-				Assigned_Programs listofAssignprograms =service.AssignedPrograms(assigned_Programs);
-				return new ResponseEntity<Assigned_Programs>(HttpStatus.ACCEPTED);
-	
-			
-			}
-			
-			
-			
-			
-			
-		
-//		@GetMapping("/getallprograms")
-//		public ResponseEntity<List<Programs>> getallprograms(@RequestBody Programs programs){
-//			List<Programs> listofprograms=service.getPrograms(programs);
-//			return new ResponseEntity<List<Programs>>(listofprograms,HttpStatus.CREATED);
-//			
-//		}
-		
-		/*
-		 * 
-		 */
-		@PutMapping("/Modify/{groupName}")
-		public ResponseEntity<?> modifyGroup( @RequestBody GroupCreation groupCreation,@PathVariable("groupName") String groupName) {
-			GroupCreation savedPrograms = service.modifyGroup(groupName, groupCreation);
-			return new ResponseEntity<GroupCreation>(savedPrograms, HttpStatus.CREATED);
-		}
-		/*
-		 * deleting Group
-		 */
-		@DeleteMapping("/delete/{groupName}")
-		public ResponseEntity<?> deleteGroupbyName(@PathVariable("groupName") String groupName){
-			service.deleteGroupbyName(groupName);
-			return new ResponseEntity<GroupCreation>(HttpStatus.OK);
-		}
-
-		@GetMapping("/group/{userName}")
-		public ResponseEntity<?> getUserByUserName1(@PathVariable("userName") String userName) {	
+	@GetMapping("/username/{userName}")
+	public ResponseEntity<?> getUserByUserName(@PathVariable("userName") String userName) {	
+		try {
 			User user = service.getUserByUserName(userName);
 			return new ResponseEntity<User>(user, HttpStatus.ACCEPTED);
+		} catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ControllerException ce = new ControllerException("Failed to get User","Something went wrong on Controller");					
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
 		}
-	
-	
-	/*
-	 * Converted a servlet into Controller
-	 * NOTE = Need to do Write Business Logic and Need to change get and post method
-	 * 
-	 */
-	
-	@GetMapping("/addPrograms")
-	public String addPrograms() {
-		return "/servlet/addPrograms";
-	}
-	@GetMapping("/Archiveenv")
-	public String Archiveenv() {
-		return "/servlet/Archiveenv";
-	}
-	@GetMapping("/ArchiveEnvironment")
-	public String ArchiveEnvironment() {
-		return "/servlet/ArchiveEnvironment";
-	}
-	@GetMapping("/GrantSys")
-	public String GrantSys() {
-		return "/servlet/GrantSys";
-	}
-	@GetMapping("/datapath")
-	public String datapath() {
-		return "/servlet/datapath";
-	}
-	@GetMapping("/ArchiveDatabase")
-	public String ArchiveDatabase() {
-		return "/servlet/ArchiveDatabase";
-	}
-	@GetMapping("/ArchiveFileInfo")
-	public String ArchiveFileInfo() {
-		return "/servlet/ArchiveFileInfo";
-	}
-	@GetMapping("/buildTree")
-	public String buildTree() {
-		return "/servlet/buildTree";
-	}
-	@GetMapping("/changePassword")
-	public String changePassword() {
-		return "/servlet/changePassword";
-	}
-	@GetMapping("/checkUser")
-	public String checkUser() {
-		return "/servlet/checkUser";
-	}
-	@GetMapping("/configuration")
-	public String configuration() {
-		return "/servlet/configuration";
-	}
-	@GetMapping("/DetailReport")
-	public String DetailReport() {
-		return "/servlet/DetailReport";
-	}
-	@GetMapping("/DBProfile")
-	public String DBProfile() {
-		return "/servlet/DBProfile";
-	}
-	@GetMapping("/Diagnostics")
-	public String Diagnostics() {
-		return "/servlet/Diagnostics";
-	}
-	@GetMapping("/Group")
-	public String Group() {
-		return "/servlet/Group";
-	}
-	@GetMapping("/Job")
-	public String Job() {
-		return "/servlet/Job";
-	}
-	@GetMapping("/logon")
-	public String logon() {
-		return "/servlet/logon";
-	}
-	@GetMapping("/logout")
-	public String logout() {
-		return "/servlet/logout";
-	}
-	@GetMapping("/programs")
-	public String programs() {
-		return "/servlet/programs";
-	}
-	@GetMapping("/purgeJobs")
-	public String purgeJobs() {
-		return "/servlet/purgeJobs";
-	}
-	@GetMapping("/User")
-	public String User() {
-		return "/servlet/User";
-	}
-	@GetMapping("/viewJobs")
-	public String viewJobs() {
-		return "/servlet/viewJobs";
-	}
-	@GetMapping("/webdav")
-	public String webdav() {
-		return "/servlet/webdav";
 	}
 
+	@PutMapping("/update/{id}")
+	public ResponseEntity<?> update(@PathVariable("id")Long id,@RequestBody User user) {	
+		try {
+			User updating = service.update(id,user);
+			return new ResponseEntity<User>(updating, HttpStatus.ACCEPTED);
+		} catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ControllerException ce = new ControllerException("Failed to Update User","Something went wrong on Controller");					
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		}
+	}
 
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<?> delete(@PathVariable("id")Long id) {	
+		try {
+			service.delete(id);
+
+			return new ResponseEntity<String>("Deleted Sucessfully", HttpStatus.ACCEPTED);
+		} catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ControllerException ce = new ControllerException("Failed to Delete User","Something went wrong on Controller");					
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }

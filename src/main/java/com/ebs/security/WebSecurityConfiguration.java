@@ -42,16 +42,13 @@ public class WebSecurityConfiguration {
 		return provider;
 	}
 	private static final String[] WHITE_LIST_URLS = {
-			"/ebs/wc",
-			"/ebs/home"	,
-			"/ebs/register"	
+			
 	};
 	private static final String[] USER_LIST_URLS = {
-			"/ebs/user",
-			"/ebs/user/{userName}"
+			
 	};
 	private static final String[] ADMIN_LIST_URLS = {
-			"/ebs/**"
+			"/user/**"
 	};
 	
 	@Bean

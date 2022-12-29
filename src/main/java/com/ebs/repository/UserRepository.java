@@ -1,5 +1,7 @@
 package com.ebs.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import com.ebs.entity.User;
@@ -9,7 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
 
 	User findByUserName(String userName);
 	User findByEmail(String email);
-	User findByid(long id);
-	
+	List findByRole(String role);
 	
 }
