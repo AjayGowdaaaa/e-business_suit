@@ -71,5 +71,23 @@ public class UserService implements UserServiceInterface {
 		return user;
 	}
 
+<<<<<<< HEAD
 
+=======
+	User getUserByUserName(String userName);
+	
+	
+	//Group Creation
+	GroupData newGroup(GroupData groupData);
+	
+	GroupData getGroupCreationByGroupName(String groupName);
+	void deleteGroupbyName(String groupName);
+	GroupData modifyGroup(String groupName, GroupData groupData);
+	User changePassword(String userName, User user) throws Exception;
+////Assigned Programs
+//	Assigned_Programs AssignedPrograms(Assigned_Programs programs) throws Throwable;
+//	List  assignGroups( GroupData groupData) throws Exception, Throwable;
+//	List  getPrograms( GroupData groupData) throws Throwable;
+//	List  get_Particular_Program( String groupName) throws Exception;
+>>>>>>> 894987a16273b9176bb1fa2b689c212da116b41b
 }

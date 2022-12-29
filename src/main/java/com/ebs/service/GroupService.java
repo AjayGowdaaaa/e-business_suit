@@ -2,6 +2,7 @@ package com.ebs.service;
 
 import java.util.List;
 
+<<<<<<< HEAD
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -115,3 +116,17 @@ public class GroupService implements GroupServiceInterface{
 
 
 }
+=======
+import com.ebs.entity.Assigned_Programs;
+import com.ebs.entity.GroupData;
+
+import io.swagger.v3.oas.annotations.servers.Server;
+@Server
+public interface GroupService {
+	//Assigned Programs
+		Assigned_Programs AssignedPrograms(Assigned_Programs programs) throws Throwable;
+		List  assignGroups( GroupData groupData) throws Exception, Throwable;
+		List  getPrograms( GroupData groupData) throws Throwable;
+		List  get_Particular_Program( String groupName) throws Exception;
+}
+>>>>>>> 894987a16273b9176bb1fa2b689c212da116b41b
