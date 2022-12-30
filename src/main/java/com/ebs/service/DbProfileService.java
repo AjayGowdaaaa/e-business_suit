@@ -12,14 +12,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
-//	@Autowired 
-//	EntityManagerUtils emUtils;
 
-
-//	@Override
-//	public void setRepository(String url){
-//		dbpRepo = (DatabaseProfileRepository) emUtils.getJpaFactory(url).getRepository(DatabaseProfileRepository.class);
-//	}
 
 	@Override
 	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) {
@@ -70,11 +63,10 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	}
 
-//	@Override
-//	public void connectionWithURL(DatabaseProfile databaseProfile) {
-//
-//
-//	}
+	public void connectionWithURL(DatabaseProfile databaseProfile) {
+//Testing
+
+	}
 
 
 
