@@ -20,49 +20,61 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	DatabaseProfileRepository dbpRepo;
 
 	@Override
-	public ResultSet connection(String profileName) throws Exception {
+	public String  connection(String profileName) throws Exception {
 		DatabaseProfile dbp =    dbpRepo.findByProfileName(profileName);
-		Class.forName("com.mysql.cj.jdbc.Driver");  
-  //   Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");    
-		Connection connection=DriverManager.getConnection(dbp.getDbConnectionURL(), dbp.getDatabaseUserName(),dbp.getDatabaseUserPassword());   
-		System.out.println("Connection ----------------> "+connection);
+		//	Class.forName("com.mysql.cj.jdbc.Driver");
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		//   Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");  
+		Connection connection=DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.171:1521:vis/EBSDB_171","pstarch","pstarch"); 
+
+		//	Connection connection=DriverManager.getConnection(dbp.getDbConnectionURL(), dbp.getDatabaseUserName(),dbp.getDatabaseUserPassword());   
+
 		Statement statement=connection.createStatement();        
-		ResultSet rs=statement.executeQuery("select * from test ");  
+		ResultSet rs=statement.executeQuery("select * from P2P_1926958649 ");  
 		while(rs.next())  {
 			System.out.println("--------------------------->"+rs);
-			System.out.println(rs.getInt(1)+"  "+rs.getString(2));  
+			System.out.println(rs.getInt(1)+"  "+rs.getInt(2));  
 		}
 		//connection.close();  
-		return rs;
+		return "Connected";
 	}
 	@Override
 	public DatabaseProfile createDbProfile (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
 		//Setting DatabaseProfile attributes and creating url
-		databaseProfile.setDbConnectionURL(
-				databaseProfile.getAPI()+":"+
-						databaseProfile.getDatabase()+"://"+
-						databaseProfile.getServerName()+":"+
-						databaseProfile.getPortnumber()+"/"+
-						databaseProfile.getSchema()
-				);
+//		databaseProfile.setDbConnectionURL(
+//				databaseProfile.getAPI()+":"+
+//						databaseProfile.getDatabase()+"://"+
+//						databaseProfile.getServerName()+":"+
+//						databaseProfile.getPortnumber()+"/"+
+//						databaseProfile.getSchema()
+//				);
+	//	databaseProfile.setDbConnectionURL( "jdbc:oracle:thin:@192.168.0.171:1521:vis/EBSDB_171"); 
+
 		databaseProfile  = dbpRepo.save(databaseProfile);
-			//	try {
-					Class.forName("com.mysql.cj.jdbc.Driver");  
-					Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
-					if (!(connection == null)) {
-						databaseProfile.setConnected(true);
-						databaseProfile  = dbpRepo.save(databaseProfile);
-					}else {
-						
-						throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
-					}
-//				} catch (Exception e) {
-//					dbpRepo.delete(databaseProfile);
-//					e.getMessage();
-//					throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
-//
-//				}
-				return databaseProfile;
+		try {
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+
+			//	Class.forName("com.mysql.cj.jdbc.Driver");  
+			Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
+			if (!(connection == null)) {
+				databaseProfile.setConnected(true);
+				databaseProfile  = dbpRepo.save(databaseProfile);
+			}else {
+				throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+			}
+		} catch (DbConnectionException e ) {
+			dbpRepo.delete(databaseProfile);
+			e.setErrorCode("Failed to connect to DataBase Schema ");
+			e.setErrorMessage(" Provide Valid Credential ");
+			e.getMessage();
+			System.out.println(e.getErrorMessage());
+			System.out.println(e.getErrorCode());
+
+			throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+
+
+		}
+		return databaseProfile;
 	}
 
 	@Override

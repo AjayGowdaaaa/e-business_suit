@@ -47,8 +47,8 @@ public class DatabaseProfieController {
 	}
 	@GetMapping("/con/{profileName}")
     public ResponseEntity<?> connection(@PathVariable("profileName") String profileName) throws Exception {    
-        ResultSet rs =service.connection(profileName);
-        return new ResponseEntity<ResultSet>(rs, HttpStatus.ACCEPTED);
+        String rs =service.connection(profileName);
+        return new ResponseEntity<String>(rs, HttpStatus.ACCEPTED);
     }
 	
 }

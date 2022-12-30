@@ -12,6 +12,6 @@ public interface DatabaseProfileServiceInterface {
 	DatabaseProfile updateDbProfile (Long id, DatabaseProfile databaseProfile);
 	void deleteDbProfile (String profileName);
 	
-	ResultSet connection(String profileName) throws Exception;
+	String connection(String profileName) throws Exception;
 
 }
