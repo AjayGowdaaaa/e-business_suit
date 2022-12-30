@@ -2,7 +2,7 @@ package com.ebs.service;
 
 import java.util.List;
 
-<<<<<<< HEAD
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -12,6 +12,7 @@ import com.ebs.entity.Programs;
 import com.ebs.entity.User;
 import com.ebs.repository.GroupRepository;
 import com.ebs.repository.ProgramRepository;
+import com.ebs.exception.BusinessException;
 @Service
 public class GroupService implements GroupServiceInterface{
 
@@ -38,9 +39,14 @@ public class GroupService implements GroupServiceInterface{
 	 * list of groups
 	 */
 	@Override
-	public List<GroupData> getAllGroupCreations() {
+	public List<GroupData> getAllGroupdata() {
+		if(groupRepository.findAll()==null) {
+			throw new BusinessException("GroupService-Get Group Data",
+					" Group DataBase Table is empty");
+		}
 		List<GroupData> groupList = null;
 		groupList = groupRepository.findAll();
+
 		return groupList;
 	}
 	/*
@@ -48,16 +54,24 @@ public class GroupService implements GroupServiceInterface{
 	 */
 	@Override
 	public GroupData getGroupById(Long id) {
+		if(!groupRepository.existsById(id)) {
+			throw new BusinessException("GroupService-Get Group By ID",
+					" Group ID Not found in DataBase, Please enter valid ID");
+		}
 		GroupData groupData = groupRepository.findById(id).get();
 		return groupData;
 	}
 
 
 	/*
-	 * Deleting a Group using GroupName
+	 * Deleting a Group using Group ID
 	 */
 	@Override
 	public void deleteGroupbyid(Long id) {
+		if(!groupRepository.existsById(id)) {
+			throw new BusinessException("GroupService-Delete Group By ID",
+					" Group ID Not found in DataBase, Please enter valid ID");
+		}
 		GroupData gc =	groupRepository.findById(id).get();
 		groupRepository.delete(gc);
 	}
@@ -109,24 +123,4 @@ public class GroupService implements GroupServiceInterface{
 		programList = programRepository.findAll();
 		return programList;
 	}
-	
-
-
-
-
-
 }
-=======
-import com.ebs.entity.Assigned_Programs;
-import com.ebs.entity.GroupData;
-
-import io.swagger.v3.oas.annotations.servers.Server;
-@Server
-public interface GroupService {
-	//Assigned Programs
-		Assigned_Programs AssignedPrograms(Assigned_Programs programs) throws Throwable;
-		List  assignGroups( GroupData groupData) throws Exception, Throwable;
-		List  getPrograms( GroupData groupData) throws Throwable;
-		List  get_Particular_Program( String groupName) throws Exception;
-}
->>>>>>> 894987a16273b9176bb1fa2b689c212da116b41b

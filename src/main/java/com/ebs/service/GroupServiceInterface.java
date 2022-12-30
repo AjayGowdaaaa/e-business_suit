@@ -19,7 +19,7 @@ public interface GroupServiceInterface {
 
 	GroupData modifyGroup(Long id, GroupData groupData);
 
-	List<GroupData> getAllGroupCreations();
+	List<GroupData> getAllGroupdata();
 
 	Programs addprogram(Programs program);
 
