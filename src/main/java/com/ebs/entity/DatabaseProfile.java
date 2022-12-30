@@ -16,6 +16,7 @@ import lombok.Data;
 public class DatabaseProfile {
 
 	@Id
+<<<<<<< HEAD
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
@@ -146,5 +147,19 @@ public class DatabaseProfile {
 //	}
 	
 	
+=======
+	private String profileName;
+//Admin created user
+	private String databaseUserName;
+	private String  databaseUserPassword;
+//Database user
+	private String archiveUnionUser;
+	private String archiveUserPassword;
+
+	private String serverName;
+	private int sid;
+	private int portnumber;
+	private String url;
+>>>>>>> e0c2bdcc093a7a511ca18f424497e9e2aa5cb793
 
 }
