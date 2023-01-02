@@ -31,9 +31,9 @@ public class GroupService implements GroupServiceInterface{
 	@Override
 	public GroupData newGroup(GroupData groupData) {
 		GroupData savedGroup = groupData;
-		if (!(groupRepository.findByGroupName(savedGroup.getGroupName()) == null))
+		if (!(groupRepository.findByGroupName(groupData.getGroupName()) == null))
 		{
-			throw new DuplicateKeyException("GroupName Already Exsists");
+			throw new BusinessException("GroupService-Creating a Group"," Group Name is already present in database");
 		}else {
 			savedGroup=groupRepository.save(groupData);
 		}
@@ -70,6 +70,11 @@ public class GroupService implements GroupServiceInterface{
 	 */
 	@Override
 	public GroupData assignPrograms(Long id,  GroupData groupData) {
+
+		if(!groupRepository.existsById(id)) {
+			throw new BusinessException("GroupService-Assign Programs By ID",
+					" Group ID Not found in DataBase, Please enter valid ID");
+		}
 		GroupData savedPrograms = groupData;
 		savedPrograms=groupRepository.findById(id).get();
 		savedPrograms.setGroupName(groupData.getGroupName());
@@ -85,10 +90,16 @@ public class GroupService implements GroupServiceInterface{
 	 */
 	@Override
 	public GroupData modifyGroup(Long id, GroupData groupData) {
-		//List<GroupCreation> groups=null;
+
+		if(!groupRepository.existsById(id)) {
+			throw new BusinessException("GroupService-Modify Group By ID",
+					" Group ID Not found in DataBase, Please enter valid ID");
+		}
 		GroupData modifySaved = groupRepository.findById(id).get();
 		groupData.setAssignPrograms(modifySaved.getAssignPrograms());
-		return groupRepository.save(groupData);
+		modifySaved.setDescription(groupData.getDescription());
+
+		return groupRepository.save(modifySaved);
 	}
 	/*
 	 * fetching list of group names present in the database 
@@ -109,9 +120,9 @@ public class GroupService implements GroupServiceInterface{
 	public List getProgram(String groupName)  {
 		List<List> getprograms=groupRepository.findprogram(groupName);
 		if (getprograms.isEmpty()) {
-        	throw new BusinessException("Group data is empity",
+			throw new BusinessException("Group data is empity",
 					"  Please enter Data");
-             }
+		}
 		return getprograms;
 	}
 	/*
@@ -126,9 +137,9 @@ public class GroupService implements GroupServiceInterface{
 		GroupData gc =	groupRepository.findById(id).get();
 		groupRepository.delete(gc);
 	}
-	
+
 	//****************** Program Table *******************************************************
-	
+
 	/*
 	 * add programs to available programs 
 	 */
@@ -145,8 +156,8 @@ public class GroupService implements GroupServiceInterface{
 	public ArrayList FetchingAllPrograms(Programs program)  {
 		ArrayList<Programs> listosprograms=(ArrayList<Programs>) programRepository.findallprograms(program);
 		if (listosprograms.isEmpty()) {
-        	throw new BusinessException("Program table is empity","  Please enter Data");
-             }
+			throw new BusinessException("Program table is empity","  Please enter Data");
+		}
 		return listosprograms;
 
 	}
