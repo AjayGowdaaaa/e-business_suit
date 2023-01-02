@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ebs.entity.DatabaseProfile;
-import com.ebs.service.DatabaseProfileServiceInterface;
+import com.ebs.service.DbProfileServiceInterface;
 import com.ebs.service.DbProfileService;
 
 @RestController
@@ -21,7 +21,7 @@ import com.ebs.service.DbProfileService;
 public class DatabaseProfieController {
 
 	@Autowired
-	private DatabaseProfileServiceInterface service;
+	private DbProfileServiceInterface service;
 	
 	
 	@PostMapping("/createDbProfile")

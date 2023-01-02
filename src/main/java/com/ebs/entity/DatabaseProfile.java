@@ -16,7 +16,6 @@ import lombok.Data;
 public class DatabaseProfile {
 
 	@Id
-<<<<<<< HEAD
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
@@ -127,39 +126,23 @@ public class DatabaseProfile {
 	public void setDbConnectionURL(String dbConnectionURL) {
 		this.dbConnectionURL = dbConnectionURL;
 	}
-//	public boolean isConfigureNAA() {
-//		return configureNAA;
-//	}
-//	public void setConfigureNAA(boolean configureNAA) {
-//		this.configureNAA = configureNAA;
-//	}
-//	public boolean isArchiveDatabase() {
-//		return archiveDatabase;
-//	}
-//	public void setArchiveDatabase(boolean archiveDatabase) {
-//		this.archiveDatabase = archiveDatabase;
-//	}
-//	public boolean isConnected() {
-//		return connected;
-//	}
-//	public void setConnected(boolean connected) {
-//		this.connected = connected;
-//	}
+	public boolean isConfigureNAA() {
+		return configureNAA;
+	}
+	public void setConfigureNAA(boolean configureNAA) {
+		this.configureNAA = configureNAA;
+	}
+	public boolean isArchiveDatabase() {
+		return archiveDatabase;
+	}
+	public void setArchiveDatabase(boolean archiveDatabase) {
+		this.archiveDatabase = archiveDatabase;
+	}
+	public boolean isConnected() {
+		return connected;
+	}
+	public void setConnected(boolean connected) {
+		this.connected = connected;
+	}
 	
-	
-=======
-	private String profileName;
-//Admin created user
-	private String databaseUserName;
-	private String  databaseUserPassword;
-//Database user
-	private String archiveUnionUser;
-	private String archiveUserPassword;
-
-	private String serverName;
-	private int sid;
-	private int portnumber;
-	private String url;
->>>>>>> e0c2bdcc093a7a511ca18f424497e9e2aa5cb793
-
 }
