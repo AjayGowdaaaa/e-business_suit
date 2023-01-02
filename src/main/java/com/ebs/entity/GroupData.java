@@ -29,6 +29,8 @@ public class GroupData {
 	 * for ex GL selection,delete,archive
 	 */
 	private ArrayList<String> assignPrograms;
+	
+	
 	public Long getId() {
 		return id;
 	}

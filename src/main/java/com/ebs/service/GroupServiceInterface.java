@@ -1,8 +1,10 @@
 package com.ebs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
 
 import com.ebs.entity.GroupData;
 import com.ebs.entity.Programs;
@@ -23,9 +25,12 @@ public interface GroupServiceInterface {
 
 	Programs addprogram(Programs program);
 
-	List<Programs> getAllPrograms();
-
 	GroupData getGroupById(Long id);
-	
-	
+
+	List  listOfGroupNames( GroupData groupData) ;
+
+	ArrayList FetchingAllPrograms(Programs program);
+
+	List  getProgram( String groupName) ;
+
 }

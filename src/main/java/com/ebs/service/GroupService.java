@@ -1,11 +1,13 @@
 package com.ebs.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
 
 import com.ebs.entity.GroupData;
 import com.ebs.entity.Programs;
@@ -21,6 +23,8 @@ public class GroupService implements GroupServiceInterface{
 	GroupRepository groupRepository;
 	@Autowired
 	ProgramRepository programRepository;
+
+
 	/*
 	 * Creating a group, if Group is already exist in the database it shows exception
 	 */
@@ -36,7 +40,7 @@ public class GroupService implements GroupServiceInterface{
 		return savedGroup;
 	}
 	/*
-	 * list of groups
+	 *  Fetch groups details for all the Groups
 	 */
 	@Override
 	public List<GroupData> getAllGroupdata() {
@@ -50,7 +54,7 @@ public class GroupService implements GroupServiceInterface{
 		return groupList;
 	}
 	/*
-	 * fetching particular group details
+	 * fetching particular group details based on ID
 	 */
 	@Override
 	public GroupData getGroupById(Long id) {
@@ -61,22 +65,8 @@ public class GroupService implements GroupServiceInterface{
 		GroupData groupData = groupRepository.findById(id).get();
 		return groupData;
 	}
-
-
 	/*
-	 * Deleting a Group using Group ID
-	 */
-	@Override
-	public void deleteGroupbyid(Long id) {
-		if(!groupRepository.existsById(id)) {
-			throw new BusinessException("GroupService-Delete Group By ID",
-					" Group ID Not found in DataBase, Please enter valid ID");
-		}
-		GroupData gc =	groupRepository.findById(id).get();
-		groupRepository.delete(gc);
-	}
-	/*
-	 * Assign Programs to the group
+	 * Assign Programs to the group based on ID
 	 */
 	@Override
 	public GroupData assignPrograms(Long id,  GroupData groupData) {
@@ -90,7 +80,8 @@ public class GroupService implements GroupServiceInterface{
 		return savedPrograms;
 	}
 	/*
-	 * Modify the Group 
+	 * Modify the Group based on ID
+	 * here Modify only groupName and Description not assignPrograms
 	 */
 	@Override
 	public GroupData modifyGroup(Long id, GroupData groupData) {
@@ -99,14 +90,47 @@ public class GroupService implements GroupServiceInterface{
 		groupData.setAssignPrograms(modifySaved.getAssignPrograms());
 		return groupRepository.save(groupData);
 	}
-
+	/*
+	 * fetching list of group names present in the database 
+	 */
 	@Override
-	public GroupData getGroupDataByGroupName(String groupName) {
-		GroupData gc = groupRepository.findByGroupName(groupName);
-		return gc;
+	public List listOfGroupNames( GroupData groupData)  {
+		List listofgroup=null;
+		listofgroup=groupRepository.findallgroups(groupData);
+		if (listofgroup.isEmpty()) {
+			throw new BusinessException("Group data table is empity","  Please enter Data");
+		}
+		return listofgroup;
 	}
 	/*
-	 * add programs to available programs
+	 * Fetching Each group programs only based on Group name not fetching Description
+	 */
+	@Override
+	public List getProgram(String groupName)  {
+		List<List> getprograms=groupRepository.findprogram(groupName);
+		if (getprograms.isEmpty()) {
+        	throw new BusinessException("Group data is empity",
+					"  Please enter Data");
+             }
+		return getprograms;
+	}
+	/*
+	 * Deleting a Group based on Group ID
+	 */
+	@Override
+	public void deleteGroupbyid(Long id) {
+		if(!groupRepository.existsById(id)) {
+			throw new BusinessException("GroupService-Delete Group By ID",
+					" Group ID Not found in DataBase, Please enter valid ID");
+		}
+		GroupData gc =	groupRepository.findById(id).get();
+		groupRepository.delete(gc);
+	}
+	
+	//****************** Program Table *******************************************************
+	
+	/*
+	 * add programs to available programs 
 	 */
 	@Override
 	public Programs addprogram(Programs program) {
@@ -115,12 +139,23 @@ public class GroupService implements GroupServiceInterface{
 		return programs;
 	}
 	/*
-	 * programs List
+	 * Fetching all the programs present in the programs table
 	 */
 	@Override
-	public List<Programs> getAllPrograms() {
-		List<Programs> programList = null;
-		programList = programRepository.findAll();
-		return programList;
+	public ArrayList FetchingAllPrograms(Programs program)  {
+		ArrayList<Programs> listosprograms=(ArrayList<Programs>) programRepository.findallprograms(program);
+		if (listosprograms.isEmpty()) {
+        	throw new BusinessException("Program table is empity","  Please enter Data");
+             }
+		return listosprograms;
+
 	}
+
+
+	@Override
+	public GroupData getGroupDataByGroupName(String groupName) {
+		GroupData gc = groupRepository.findByGroupName(groupName);
+		return gc;
+	}
+
 }
