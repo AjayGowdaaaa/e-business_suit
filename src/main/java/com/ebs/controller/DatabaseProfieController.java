@@ -1,6 +1,5 @@
 package com.ebs.controller;
 
-import java.sql.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +22,16 @@ public class DatabaseProfieController {
 	@Autowired
 	private DatabaseProfileServiceInterface service;
 	
-	
-	@PostMapping("/createDbProfile")
-	public ResponseEntity<?> createDbProfile(@RequestBody DatabaseProfile databaseProfile) throws Exception {
-		DatabaseProfile dbProfile = service.createDbProfile(databaseProfile);
+
+	@PostMapping("/createDbProfile/{db}")
+	public ResponseEntity<?> createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
+		db = db.toLowerCase();
+		DatabaseProfile dbProfile = null;
+		if (db.equals("mysql")) {
+			 dbProfile = service.createMysqlDbp(databaseProfile);
+		}else if (db.equals("oracle")) {
+			 dbProfile = service.createOracleDbp(databaseProfile);
+		}
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 	}
 	
