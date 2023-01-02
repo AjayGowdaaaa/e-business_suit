@@ -10,3 +10,5 @@ syntax: regexp
 # use global syntax for excludes
 syntax: glob
 
+.idea/
+target/
