@@ -66,7 +66,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		return "Connected";
 	}
 
-	//TO CONNECT TO ORACLE
+	// CREATING DBPROFILE AND CONNECTING TO ORACLE DATABASE
 	@Override
 	public DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
@@ -108,7 +108,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		return databaseProfile;
 	}
 
-	//TO CONNECT TO MYSQL
+	// CREATING DBPROFILE AND CONNECTING TO MYSQL DATABASE
 	@Override
 	public DatabaseProfile createMysqlDbp (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
@@ -121,16 +121,15 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 				!(databaseProfile.getServerName()==null) && 
 				!(databaseProfile.getPortnumber()==0) &&
 				!(databaseProfile.getSchema()==null) ) {
-
+			
 			databaseProfile.setDbConnectionURL(
-					databaseProfile.getAPI()+":"+
+							databaseProfile.getAPI()+":"+
 							databaseProfile.getDatabase()+"://"+
 							databaseProfile.getServerName()+":"+
 							databaseProfile.getPortnumber()+"/"+
 							databaseProfile.getSchema()
 					);
 		}
-
 		databaseProfile  = dbpRepo.save(databaseProfile);
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");  
@@ -155,6 +154,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		return databaseProfile;
 	}
 
+	//Getting DbProfile by profile name
 	@Override
 	public DatabaseProfile getDatabaseProfileByProfileName(String profileName) {
 		DatabaseProfile dbp =	dbpRepo.findByProfileName(profileName);
