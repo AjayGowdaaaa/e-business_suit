@@ -39,9 +39,11 @@ public class DatabaseProfile {
 	//Connection 2
 	private String dbConnectionURL;
 	
+	//Configuration
 	private boolean configureNAA;
 	private boolean archiveDatabase;
 	private boolean connected;
+	
 	
 	
 	

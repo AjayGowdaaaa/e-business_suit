@@ -13,6 +13,8 @@ import com.ebs.exception.BusinessException;
 import com.ebs.exception.DbConnectionException;
 import com.ebs.repository.DatabaseProfileRepository;
 
+import ch.qos.logback.core.joran.conditional.IfAction;
+
 @Service
 public class DbProfileService implements DatabaseProfileServiceInterface {
 
@@ -65,23 +67,35 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		}
 		return "Connected";
 	}
-
+	@Override
+	public String mySqlConUrlGenerator(DatabaseProfile databaseProfile) {
+		databaseProfile.setAPI("jdbc");
+		databaseProfile.setDatabase("mysql");
+		String url=databaseProfile.getAPI()+":"+
+				databaseProfile.getDatabase()+"://"+
+				databaseProfile.getServerName()+":"+
+				databaseProfile.getPortnumber()+"/"+
+				databaseProfile.getSchema();
+		return url;
+	}
+	@Override
+	public String oracleConUrlGenerator(DatabaseProfile databaseProfile) {
+		databaseProfile.setAPI("jdbc");
+		databaseProfile.setDatabase("oracle:thin");
+		String url=databaseProfile.getAPI()+":"+
+				databaseProfile.getDatabase()+":@"+
+				databaseProfile.getServerName()+":"+
+				databaseProfile.getPortnumber()+":"+
+				databaseProfile.getSid();
+		return url;
+	}
 	// CREATING DBPROFILE AND CONNECTING TO ORACLE DATABASE
 	@Override
 	public DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
 			throw new BusinessException("Duplicate DBProfile", "DBProfile already EXsist in database");
 		}
-		databaseProfile.setAPI("jdbc");
-		databaseProfile.setDatabase("oracle:thin");
-		databaseProfile.setDbConnectionURL(
-				databaseProfile.getAPI()+":"+
-						databaseProfile.getDatabase()+":@"+
-						databaseProfile.getServerName()+":"+
-						databaseProfile.getPortnumber()+":"+
-						databaseProfile.getSid()
-
-				);
+		databaseProfile.setDbConnectionURL(oracleConUrlGenerator(databaseProfile) );
 		databaseProfile  = dbpRepo.save(databaseProfile);
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver"); 
@@ -108,27 +122,20 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		return databaseProfile;
 	}
 
+
+
 	// CREATING DBPROFILE AND CONNECTING TO MYSQL DATABASE
 	@Override
 	public DatabaseProfile createMysqlDbp (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
-			throw new BusinessException("Duplicate DBProfile", "DBProfile already EXsist in database");
+			throw new DbConnectionException("Duplicate DBProfile", "DBProfile already Exsist in database");
 		}
-		databaseProfile.setAPI("jdbc");
-		databaseProfile.setDatabase("mysql");
 		//Setting DatabaseProfile attributes and creating url
-		if (!(databaseProfile.getDatabase()==null) && 
-				!(databaseProfile.getServerName()==null) && 
-				!(databaseProfile.getPortnumber()==0) &&
+		//Connection 1 
+		if (	!(databaseProfile.getPortnumber()==0) &&
 				!(databaseProfile.getSchema()==null) ) {
-			
-			databaseProfile.setDbConnectionURL(
-							databaseProfile.getAPI()+":"+
-							databaseProfile.getDatabase()+"://"+
-							databaseProfile.getServerName()+":"+
-							databaseProfile.getPortnumber()+"/"+
-							databaseProfile.getSchema()
-					);
+			String Url = mySqlConUrlGenerator(databaseProfile);
+			databaseProfile.setDbConnectionURL(Url);
 		}
 		databaseProfile  = dbpRepo.save(databaseProfile);
 		try {
@@ -148,10 +155,93 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 			e.getMessage();
 			System.out.println(e.getErrorMessage());
 			System.out.println(e.getErrorCode());
-
 			throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 		}
 		return databaseProfile;
+	}
+
+
+
+	//UPDATING DATABASE PROFILE USING PROFILENAME
+	@Override
+	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile) {
+		//	DatabaseProfile existingDbP = dbpRepo.findById(id).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
+		DatabaseProfile existingDbP =dbpRepo.findByProfileName(profileName);
+		if (existingDbP == null) {
+			throw new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName");
+		}
+		boolean isOracleDBP = existingDbP.getDatabase().contains("oracle");
+		boolean isMysqlDBP = existingDbP.getDatabase().contains("mysql");
+
+		//TO MODIFY ORACLE DATABASE		
+		if (isOracleDBP && existingDbP.isConfigureNAA() ) {
+			existingDbP.setDatabaseUserPassword(databaseProfile.getDatabaseUserPassword());
+			existingDbP.setServerName(databaseProfile.getServerName());
+			existingDbP.setPortnumber(databaseProfile.getPortnumber());
+			existingDbP.setSid(databaseProfile.getSid());
+			existingDbP.setDbConnectionURL(databaseProfile.getDbConnectionURL());
+			//Connection 1
+			if ( !(databaseProfile.getServerName()==null) && 
+					!(databaseProfile.getPortnumber()==0) &&
+					!(databaseProfile.getSid()==null) ) {
+				existingDbP.setDbConnectionURL(oracleConUrlGenerator(databaseProfile));
+			}
+			dbpRepo.save(existingDbP);
+			//JDBC (Connecting DbProfile to Database
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection connection=DriverManager.getConnection(existingDbP.getDbConnectionURL(), existingDbP.getDatabaseUserName(),existingDbP.getDatabaseUserPassword());  
+				if (!(connection == null)) {
+					existingDbP.setConnected(true);
+					existingDbP  = dbpRepo.save(existingDbP);
+				}else {
+					dbpRepo.delete(existingDbP);
+					throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+				}
+			} catch (Exception e) {
+				dbpRepo.delete(databaseProfile);
+				e.getMessage();
+			}  
+		}
+		//TO MODIFY MySQL DATABASE		
+		else if (isMysqlDBP) {		
+			if (isOracleDBP && existingDbP.isConfigureNAA() ) {
+				existingDbP.setDatabaseUserPassword(databaseProfile.getDatabaseUserPassword());
+				existingDbP.setServerName(databaseProfile.getServerName());
+				existingDbP.setPortnumber(databaseProfile.getPortnumber());
+				existingDbP.setSchema(databaseProfile.getSchema());
+				existingDbP.setDbConnectionURL(databaseProfile.getDbConnectionURL());
+				//Connection 1
+				if ( !(databaseProfile.getServerName()==null) && 
+						!(databaseProfile.getPortnumber()==0) &&
+						!(databaseProfile.getSid()==null) ) {
+					existingDbP.setDbConnectionURL(mySqlConUrlGenerator(databaseProfile));
+				}
+				dbpRepo.save(existingDbP);
+				//JDBC (Connecting DbProfile to Database
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");  
+					Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
+					if (!(connection == null)) {
+						databaseProfile.setConnected(true);
+						databaseProfile  = dbpRepo.save(databaseProfile);
+					}else {
+						dbpRepo.delete(databaseProfile);
+						throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+					}
+				} catch (Exception e) {
+					dbpRepo.delete(databaseProfile);
+					e.getMessage();
+				}  
+			}
+
+			try {
+				existingDbP = dbpRepo.save(existingDbP);
+			} catch (BusinessException e) {
+				throw new BusinessException("update DatabaseProfile ","Failed to Update DatabaseProfile " + e.getMessage());		
+			}
+		}
+		return existingDbP;
 	}
 
 	//Getting DbProfile by profile name
@@ -161,23 +251,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		return dbp ;
 	}
 
-	@Override
-	public DatabaseProfile updateDbProfile(Long id, DatabaseProfile databaseProfile) {
-		DatabaseProfile existingDbP = dbpRepo.findById(id).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
-		existingDbP.setDatabaseUserName(databaseProfile.getDatabaseUserName());
-		existingDbP.setDatabaseUserPassword(databaseProfile.getDatabaseUserPassword());
-		existingDbP.setServerName(databaseProfile.getServerName());
-		existingDbP.setSid(databaseProfile.getSid());
-		existingDbP.setPortnumber(databaseProfile.getPortnumber());
-
-		try {
-			existingDbP = dbpRepo.save(existingDbP);
-		} catch (BusinessException e) {
-			throw new BusinessException("update DatabaseProfile ","Failed to Update DatabaseProfile " + e.getMessage());		
-		}
-		return existingDbP;
-	}
-
+	//DELETING DATABASEPROFILE USING PROFILENAME
 	@Override
 	public void deleteDbProfile(String profileName) {
 		DatabaseProfile dbp = dbpRepo.findByProfileName(profileName);

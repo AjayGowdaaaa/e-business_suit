@@ -40,11 +40,13 @@ public class DatabaseProfieController {
 		DatabaseProfile dbProfile = service.getDatabaseProfileByProfileName(profileName);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.ACCEPTED);
 	}
+	
 	@PutMapping("/updateDbProfile/{profileName}")
-	public ResponseEntity<?> updateDbProfile(@PathVariable  Long id,@RequestBody DatabaseProfile databaseProfile) {	
-		DatabaseProfile dbProfile = service.updateDbProfile(id, databaseProfile);
+	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) {	
+		DatabaseProfile dbProfile = service.updateDbProfile(profileName, databaseProfile);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 	}
+	
 	@DeleteMapping("/delete/{profileName}")
 	public ResponseEntity<?> deleteDbProfile(@PathVariable("profileName") String profileName) {
 		service.deleteDbProfile(profileName);

@@ -30,7 +30,7 @@ public class UserController {
 			User savingUser = service.register(user);
 			return new ResponseEntity<User>(savingUser, HttpStatus.CREATED);
 		} catch (BusinessException e) {
-			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			ControllerException ce = new ControllerException();
 			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			ControllerException ce = new ControllerException("Failed to register User","Something went wrong on Controller");
@@ -57,7 +57,7 @@ public class UserController {
 			User user = service.getUserByUserName(userName);
 			return new ResponseEntity<User>(user, HttpStatus.ACCEPTED);
 		} catch (BusinessException e) {
-			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			ControllerException ce = new ControllerException();
 			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			ControllerException ce = new ControllerException("Failed to get User","Something went wrong on Controller");					
@@ -79,19 +79,26 @@ public class UserController {
 		}
 	}
 	
+//	@DeleteMapping("/delete/{id}")
+//	public ResponseEntity<?> delete(@PathVariable("id")Long id) {	
+//		try {
+//			service.delete(id);
+//
+//			return new ResponseEntity<String>("Deleted Sucessfully", HttpStatus.ACCEPTED);
+//		} catch (BusinessException e) {
+//			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+//			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+//		} catch (Exception e) {
+//			ControllerException ce = new ControllerException("Failed to Delete User","Something went wrong on Controller");					
+//			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+//		}
+//	}
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<?> delete(@PathVariable("id")Long id) {	
-		try {
-			service.delete(id);
+	public ResponseEntity<String> delete(@PathVariable("id")Long id) {	
+	
+			return ResponseEntity.ok().body(service.delete(id));
 
-			return new ResponseEntity<String>("Deleted Sucessfully", HttpStatus.ACCEPTED);
-		} catch (BusinessException e) {
-			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
-			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			ControllerException ce = new ControllerException("Failed to Delete User","Something went wrong on Controller");					
-			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
-		}
+			
 	}
 
 }

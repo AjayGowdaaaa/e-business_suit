@@ -5,6 +5,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import com.ebs.entity.User;
 import com.ebs.exception.BusinessException;
+import com.ebs.exception.NotFoundException;
 import com.ebs.repository.UserRepository;
 
 @Service
@@ -69,10 +70,14 @@ public class UserService implements UserServiceInterface {
 
 
 	@Override
-	public void delete(Long id) {
-		User exsistingUser = userRepo.findById(id).orElseThrow(() -> new BusinessException("User does not exsits in Repository", "Please Enter valid profileName"));
-		userRepo.delete(exsistingUser);	
+	public String delete(Long id) {
+	return userRepo.findById(id).
+				map(temp-> {userRepo.delete(temp);
+				return "Deleted the requested user + " +id ;
+				}).orElseThrow(() -> new NotFoundException("Requested user with given id is not available "+ id));
+		
 	}
+
 
 	@Override
 	public User getUserById(Long id) {
