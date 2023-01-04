@@ -1,6 +1,9 @@
 package com.ebs.service;
 
+import java.sql.SQLException;
+
 import com.ebs.entity.DatabaseProfile;
+import com.ebs.exception.DbConnectionException;
 
 public interface DatabaseProfileServiceInterface {
 
@@ -12,7 +15,7 @@ public interface DatabaseProfileServiceInterface {
 	DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws Exception;
 
 	DatabaseProfile getDatabaseProfileByProfileName(String profileName);
-	DatabaseProfile updateDbProfile (String profileName, DatabaseProfile databaseProfile);
+	DatabaseProfile updateDbProfile (String profileName, DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException, DbConnectionException;
 	void deleteDbProfile (String profileName);
 	//Testing
 	String connection(String profileName) throws Exception;

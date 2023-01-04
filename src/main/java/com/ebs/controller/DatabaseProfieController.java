@@ -1,5 +1,7 @@
 package com.ebs.controller;
 
+import java.sql.SQLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ebs.entity.DatabaseProfile;
+import com.ebs.exception.DbConnectionException;
 import com.ebs.service.DatabaseProfileServiceInterface;
 
 @RestController
@@ -42,7 +45,7 @@ public class DatabaseProfieController {
 	}
 	
 	@PutMapping("/updateDbProfile/{profileName}")
-	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) {	
+	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException, DbConnectionException {	
 		DatabaseProfile dbProfile = service.updateDbProfile(profileName, databaseProfile);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 	}
