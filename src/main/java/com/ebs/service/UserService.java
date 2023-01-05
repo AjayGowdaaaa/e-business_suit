@@ -3,9 +3,9 @@ package com.ebs.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
 import com.ebs.entity.User;
 import com.ebs.exception.BusinessException;
-import com.ebs.exception.NotFoundException;
 import com.ebs.repository.UserRepository;
 
 @Service
@@ -71,10 +71,8 @@ public class UserService implements UserServiceInterface {
 
 	@Override
 	public String delete(Long id) {
-	return userRepo.findById(id).
-				map(temp-> {userRepo.delete(temp);
-				return "Deleted the requested user + " +id ;
-				}).orElseThrow(() -> new NotFoundException("Requested user with given id is not available "+ id));
+	return null;
+
 		
 	}
 

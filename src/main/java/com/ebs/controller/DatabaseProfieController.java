@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.ebs.entity.DatabaseProfile;
-import com.ebs.exception.DbConnectionException;
+import com.ebs.exception.BusinessException;
+import com.ebs.exception.ControllerException;
 import com.ebs.service.DatabaseProfileServiceInterface;
 
 @RestController
@@ -24,41 +24,50 @@ public class DatabaseProfieController {
 
 	@Autowired
 	private DatabaseProfileServiceInterface service;
-	
+
 
 	@PostMapping("/createDbProfile/{db}")
 	public ResponseEntity<?> createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
-		db = db.toLowerCase();
-		DatabaseProfile dbProfile = null;
-		if (db.equals("mysql")) {
-			 dbProfile = service.createMysqlDbp(databaseProfile);
-		}else if (db.equals("oracle")) {
-			 dbProfile = service.createOracleDbp(databaseProfile);
+		try {
+			db = db.toLowerCase();
+			DatabaseProfile dbProfile = null;
+			if (db.equals("mysql")) {
+				dbProfile = service.createMysqlDbp(databaseProfile);
+			}else if (db.equals("oracle")) {
+				dbProfile = service.createOracleDbp(databaseProfile);
+			}
+			return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
+		} catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ControllerException ce = new ControllerException("Failed to create DBProfile",
+					"Something went wrong");
+			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 	}
-	
+
 	@GetMapping("/databaseProfile/{profileName}")
 	public ResponseEntity<?> getUserByUserName(@PathVariable("profileName") String profileName) {	
 		DatabaseProfile dbProfile = service.getDatabaseProfileByProfileName(profileName);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.ACCEPTED);
 	}
-	
+
 	@PutMapping("/updateDbProfile/{profileName}")
-	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException, DbConnectionException {	
+	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException {	
 		DatabaseProfile dbProfile = service.updateDbProfile(profileName, databaseProfile);
 		return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 	}
-	
+
 	@DeleteMapping("/delete/{profileName}")
 	public ResponseEntity<?> deleteDbProfile(@PathVariable("profileName") String profileName) {
 		service.deleteDbProfile(profileName);
 		return new ResponseEntity<String>("profileName ---> Deleted Sucessfuly",HttpStatus.ACCEPTED);
 	}
 	@GetMapping("/con/{profileName}")
-    public ResponseEntity<?> connection(@PathVariable("profileName") String profileName) throws Exception {    
-        String rs =service.connection(profileName);
-        return new ResponseEntity<String>(rs, HttpStatus.ACCEPTED);
-    }
-	
+	public ResponseEntity<?> connection(@PathVariable("profileName") String profileName) throws Exception {    
+		String rs =service.connection(profileName);
+		return new ResponseEntity<String>(rs, HttpStatus.ACCEPTED);
+	}
+
 }

@@ -7,13 +7,9 @@ import java.sql.Statement;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.ebs.entity.DatabaseProfile;
 import com.ebs.exception.BusinessException;
-import com.ebs.exception.DbConnectionException;
 import com.ebs.repository.DatabaseProfileRepository;
-
-import ch.qos.logback.core.joran.conditional.IfAction;
 
 @Service
 public class DbProfileService implements DatabaseProfileServiceInterface {
@@ -91,7 +87,8 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	}
 	// CREATING DBPROFILE AND CONNECTING TO ORACLE DATABASE
 	@Override
-	public DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
+	public DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws BusinessException, Exception{
+
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
 			throw new BusinessException("Duplicate DBProfile", "DBProfile already EXsist in database");
 		}
@@ -105,10 +102,10 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 				databaseProfile  = dbpRepo.save(databaseProfile);
 			}else {
 				dbpRepo.delete(databaseProfile);
-				throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+				throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 
 			}
-		} catch (DbConnectionException e ) {
+		} catch (BusinessException e ) {
 			dbpRepo.delete(databaseProfile);
 			e.setErrorCode("Failed to connect to DataBase Schema ");
 			e.setErrorMessage(" Provide Valid Credential ");
@@ -116,7 +113,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 			System.out.println(e.getErrorMessage());
 			System.out.println(e.getErrorCode());
 
-			throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+			throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 		}
 
 		return databaseProfile;
@@ -124,11 +121,15 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 
 
+	private BusinessException BusinessException(String string, String string2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	// CREATING DBPROFILE AND CONNECTING TO MYSQL DATABASE
 	@Override
-	public DatabaseProfile createMysqlDbp (DatabaseProfile databaseProfile) throws DbConnectionException, Exception{
+	public DatabaseProfile createMysqlDbp (DatabaseProfile databaseProfile) throws BusinessException, Exception{
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
-			throw new DbConnectionException("Duplicate DBProfile", "DBProfile already Exsist in database");
+			throw new BusinessException("Duplicate DBProfile", "DBProfile already Exsist in database");
 		}
 		//Setting DatabaseProfile attributes and creating url
 		//Connection 1 
@@ -146,16 +147,16 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 				databaseProfile  = dbpRepo.save(databaseProfile);
 			}else {
 				dbpRepo.delete(databaseProfile);
-				throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+				throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 			}
-		} catch (DbConnectionException e ) {
+		} catch (BusinessException e ) {
 			dbpRepo.delete(databaseProfile);
 			e.setErrorCode("Failed to connect to DataBase Schema ");
 			e.setErrorMessage(" Provide Valid Credential ");
 			e.getMessage();
 			System.out.println(e.getErrorMessage());
 			System.out.println(e.getErrorCode());
-			throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+			throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 		}
 		return databaseProfile;
 	}
@@ -198,7 +199,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 					dbpRepo.save(existingDbP);
 				}else {
 					dbpRepo.delete(existingDbP);
-					throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+					throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 				}
 			} catch (Exception e) {
 				e.getMessage();
@@ -230,7 +231,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 						dbpRepo.save(existingDbP);
 					}else {
 						dbpRepo.delete(existingDbP);
-						throw new DbConnectionException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+						throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 					}
 				} catch (Exception e) {
 					System.out.println();
