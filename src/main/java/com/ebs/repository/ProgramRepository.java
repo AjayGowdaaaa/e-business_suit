@@ -11,8 +11,8 @@ import com.ebs.entity.Programs;
 @Repository
 public interface ProgramRepository extends JpaRepository<Programs, Long> {
 
-
-	@Query("SELECT entity.availablePrograms FROM  Programs entity")
-	ArrayList<?> findallprograms(Programs program);
+//
+//	@Query("SELECT entity.availablePrograms FROM  Programs entity")
+//	ArrayList<?> findallprograms(Programs program);
 
 }

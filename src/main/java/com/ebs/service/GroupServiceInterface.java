@@ -1,7 +1,9 @@
 package com.ebs.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -12,8 +14,10 @@ import com.ebs.entity.Programs;
 public interface GroupServiceInterface {
 
 	GroupData newGroup(GroupData groupData);
+	
+	List<GroupData> getAllGroupdata();
 
-	GroupData getGroupDataByGroupName(String groupName);
+	HashMap<String, Object> getAllListOf_ProgramsAndGroup() throws Exception;
 
 	void deleteGroupbyid(Long  id);
 
@@ -21,16 +25,32 @@ public interface GroupServiceInterface {
 
 	GroupData modifyGroup(Long id, GroupData groupData);
 
-	List<GroupData> getAllGroupdata();
-
 	Programs addprogram(Programs program);
-
-	GroupData getGroupById(Long id);
-
-	List  listOfGroupNames( GroupData groupData) ;
-
-	ArrayList FetchingAllPrograms(Programs program);
-
-	List  getProgram( String groupName) ;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//
+//	GroupData getGroupById(Long id);
+//
+//	List  listOfGroupNames( GroupData groupData) ;
+//
+//	ArrayList FetchingAllPrograms(Programs program);
+//
+//	HashMap<Long, Object>  getProgram( Long id) ;
+//
+//	void deleteAndSaveFormAccess(int group, List<Integer> selectedArr);
+//	
+	
+	
+	//GroupData getGroupDataByGroupName(String groupName);
+	
+	//Map<Long, ArrayList<String>> getAllGroupdata();
 
 }
