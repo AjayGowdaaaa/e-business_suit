@@ -7,6 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.UniqueElements;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +17,9 @@ import lombok.Data;
 
 @Data
 @Schema
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "database_profile")
 public class DatabaseProfile {
