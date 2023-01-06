@@ -72,13 +72,16 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	}
 	// CREATING DBPROFILE AND CONNECTING TO ORACLE DATABASE
 	@Override
-	public DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws BusinessException, Exception{
-
+	public DatabaseProfile createOracleDbp (DatabaseProfile db) throws BusinessException, Exception{
+		DatabaseProfile  databaseProfile=db;
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
-			throw new CustomException("DBProfile already EXsist in database");
+			throw new CustomException("DBProfile already Exsist in database");
 		}
-		databaseProfile.setDbConnectionURL(oracleConUrlGenerator(databaseProfile) );
-		databaseProfile  = dbpRepo.save(databaseProfile);
+		if (	!(databaseProfile.getPortnumber()==0) &&
+				!(databaseProfile.getSid()==null) ) {
+			String Url = oracleConUrlGenerator(databaseProfile);
+			databaseProfile.setDbConnectionURL(Url);
+		}
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver"); 
 			Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
@@ -92,9 +95,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		} catch (CustomException e ) {
 			dbpRepo.delete(databaseProfile);
 			throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
-
 		}
-
 		return databaseProfile;
 	}
 
@@ -103,9 +104,8 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	public DatabaseProfile createMysqlDbp (DatabaseProfile db) throws BusinessException, Exception{
 		DatabaseProfile  databaseProfile=db;
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
-			throw new CustomException("DBProfile already EXsist in database");
+			throw new CustomException("DBProfile already Exsist in database");
 		}
-		
 		//Setting DatabaseProfile attributes and creating url
 		//Connection 1 
 		if (	!(databaseProfile.getPortnumber()==0) &&

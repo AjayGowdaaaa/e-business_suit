@@ -2,7 +2,6 @@ package com.ebs.controller;
 
 import java.sql.SQLException;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,28 +50,28 @@ public class DatabaseProfieController {
 	}
 
 
-	//	@PostMapping("/createDbProfile/{db}")
-	//	public void createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
-	//		String profile= databaseProfile.getProfileName();
-	//		System.out.println(profile+"       ");
-	//
-	//		db = db.toLowerCase();
-	//		DatabaseProfile dbProfile = null;
-	//		if (db.equals("mysql")) {
-	//			List<DatabaseProfile> ls=	databaseProfileRepository.findAll();
-	//			System.out.println(ls.size()+"       ");
-	//			System.out.println(databaseProfile.getProfileName()+"       ");
-	//			List<DatabaseProfile> listAfterValidation=	ls.stream().filter(column->column.getProfileName().equals(profile)).collect(Collectors.toList());	
-	//			if(CollectionUtils.isEmpty(listAfterValidation)) {
-	//				databaseProfileRepository.save(databaseProfile);
-	//			}
-	//			else {
-	//				throw new CustomException("Already Existed");
-	//			}			
-	//		}else if (db.equals("oracle")) {
-	//			//dbProfile = service.createOracleDbp(databaseProfile);
-	//		}
-	//	}
+//		@PostMapping("/createDbProfile/{db}")
+//		public void createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
+//			String profile= databaseProfile.getProfileName();
+//			System.out.println(profile+"       ");
+//	
+//			db = db.toLowerCase();
+//			DatabaseProfile dbProfile = null;
+//			if (db.equals("mysql")) {
+//				List<DatabaseProfile> ls=	databaseProfileRepository.findAll();
+//				System.out.println(ls.size()+"       ");
+//				System.out.println(databaseProfile.getProfileName()+"       ");
+//				List<DatabaseProfile> listAfterValidation=	ls.stream().filter(column->column.getProfileName().equals(profile)).collect(Collectors.toList());	
+//				if(CollectionUtils.isEmpty(listAfterValidation)) {
+//					databaseProfileRepository.save(databaseProfile);
+//				}
+//				else {
+//					throw new CustomException("Already Existed");
+//				}			
+//			}else if (db.equals("oracle")) {
+//				//dbProfile = service.createOracleDbp(databaseProfile);
+//			}
+//		}
 
 
 	@GetMapping("/databaseProfile/{profileName}")
@@ -84,9 +83,7 @@ public class DatabaseProfieController {
 			CustomException c = new CustomException(e.getMessage());
 			return new ResponseEntity<String>(c.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			ControllerException ce = new ControllerException("Failed to create DBProfile",
-					"Something went wrong");
-			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -94,7 +91,6 @@ public class DatabaseProfieController {
 	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException {	
 		try {
 			DatabaseProfile dbProfile = service.updateDbProfile(profileName, databaseProfile);
-
 			return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
 		} catch (CustomException e) {
 			CustomException c = new CustomException(e.getMessage());
