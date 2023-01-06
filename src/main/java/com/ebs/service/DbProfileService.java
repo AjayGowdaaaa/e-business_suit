@@ -4,11 +4,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ebs.entity.DatabaseProfile;
 import com.ebs.exception.BusinessException;
+import com.ebs.exception.CustomException;
+import com.ebs.exception.DBException;
 import com.ebs.repository.DatabaseProfileRepository;
 
 @Service
@@ -17,25 +20,6 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
 
-	//	@Override
-	//	public String  connection(String profileName) throws Exception {
-	//		DatabaseProfile dbp =    dbpRepo.findByProfileName(profileName);
-	//		//	Class.forName("com.mysql.cj.jdbc.Driver");
-	//		Class.forName("oracle.jdbc.driver.OracleDriver");
-	//		//   Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");  
-	//		Connection connection=DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.171:1521:vis:EBSDB_171","pstarch","pstarch"); 
-	//
-	//		//	Connection connection=DriverManager.getConnection(dbp.getDbConnectionURL(), dbp.getDatabaseUserName(),dbp.getDatabaseUserPassword());   
-	//
-	//		Statement statement=connection.createStatement();        
-	//		ResultSet rs=statement.executeQuery("select * from P2P_1926958649 ");  
-	//		while(rs.next())  {
-	//			System.out.println("--------------------------->"+rs);
-	//			System.out.println(rs.getInt(1)+"  "+rs.getInt(2));  
-	//		}
-	//		//connection.close();  
-	//		return "Connected";
-	//	}
 	@Override
 	public String  connection(String profileName) throws Exception {
 		DatabaseProfile dbp =    dbpRepo.findByProfileName(profileName);
@@ -63,6 +47,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 		}
 		return "Connected";
 	}
+
 	@Override
 	public String mySqlConUrlGenerator(DatabaseProfile databaseProfile) {
 		databaseProfile.setAPI("jdbc");
@@ -90,7 +75,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	public DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws BusinessException, Exception{
 
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
-			throw new BusinessException("Duplicate DBProfile", "DBProfile already EXsist in database");
+			throw new CustomException("DBProfile already EXsist in database");
 		}
 		databaseProfile.setDbConnectionURL(oracleConUrlGenerator(databaseProfile) );
 		databaseProfile  = dbpRepo.save(databaseProfile);
@@ -102,35 +87,25 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 				databaseProfile  = dbpRepo.save(databaseProfile);
 			}else {
 				dbpRepo.delete(databaseProfile);
-				throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
-
+				throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
 			}
-		} catch (BusinessException e ) {
+		} catch (CustomException e ) {
 			dbpRepo.delete(databaseProfile);
-			e.setErrorCode("Failed to connect to DataBase Schema ");
-			e.setErrorMessage(" Provide Valid Credential ");
-			e.getMessage();
-			System.out.println(e.getErrorMessage());
-			System.out.println(e.getErrorCode());
+			throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
 
-			throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
 		}
 
 		return databaseProfile;
 	}
 
-
-
-	private BusinessException BusinessException(String string, String string2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	// CREATING DBPROFILE AND CONNECTING TO MYSQL DATABASE
 	@Override
-	public DatabaseProfile createMysqlDbp (DatabaseProfile databaseProfile) throws BusinessException, Exception{
+	public DatabaseProfile createMysqlDbp (DatabaseProfile db) throws BusinessException, Exception{
+		DatabaseProfile  databaseProfile=db;
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
-			throw new BusinessException("Duplicate DBProfile", "DBProfile already Exsist in database");
+			throw new CustomException("DBProfile already EXsist in database");
 		}
+		
 		//Setting DatabaseProfile attributes and creating url
 		//Connection 1 
 		if (	!(databaseProfile.getPortnumber()==0) &&
@@ -138,25 +113,20 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 			String Url = mySqlConUrlGenerator(databaseProfile);
 			databaseProfile.setDbConnectionURL(Url);
 		}
-		databaseProfile  = dbpRepo.save(databaseProfile);
+	//	databaseProfile  = dbpRepo.save(databaseProfile);
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");  
 			Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
-			if (!(connection == null)) {
+			if (connection != null) {
 				databaseProfile.setConnected(true);
 				databaseProfile  = dbpRepo.save(databaseProfile);
 			}else {
 				dbpRepo.delete(databaseProfile);
-				throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+				throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
 			}
-		} catch (BusinessException e ) {
+		} catch (CustomException e ) {
 			dbpRepo.delete(databaseProfile);
-			e.setErrorCode("Failed to connect to DataBase Schema ");
-			e.setErrorMessage(" Provide Valid Credential ");
-			e.getMessage();
-			System.out.println(e.getErrorMessage());
-			System.out.println(e.getErrorCode());
-			throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+			throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
 		}
 		return databaseProfile;
 	}
@@ -165,19 +135,17 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	//UPDATING DATABASE PROFILE USING PROFILENAME
 	@Override
-	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile) {
+	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile) throws CustomException, DBException {
 		//	DatabaseProfile existingDbP = dbpRepo.findById(id).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
 		DatabaseProfile existingDbP =dbpRepo.findByProfileName(profileName);
 		if (existingDbP == null) {
-			throw new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName");
+			throw new CustomException("DBProfile Not Exsist in database");
 		}
-
 		boolean isOracleDBP = existingDbP.getDatabase().contains("oracle");
 		boolean isMysqlDBP = existingDbP.getDatabase().contains("mysql");
 
 		//TO MODIFY ORACLE DATABASE	
 		if (isOracleDBP && existingDbP.isConfigureNAA() ) {
-
 			existingDbP.setDatabaseUserPassword(databaseProfile.getDatabaseUserPassword());
 			existingDbP.setServerName(databaseProfile.getServerName());
 			existingDbP.setPortnumber(databaseProfile.getPortnumber());
@@ -199,11 +167,11 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 					dbpRepo.save(existingDbP);
 				}else {
 					dbpRepo.delete(existingDbP);
-					throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+					throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
 				}
 			} catch (Exception e) {
 				e.getMessage();
-				throw new BusinessException("update DatabaseProfile ","Failed to Update DatabaseProfile " + e.getMessage());
+				throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
 			}  
 		}
 		//TO MODIFY MySQL DATABASE		
@@ -231,39 +199,42 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 						dbpRepo.save(existingDbP);
 					}else {
 						dbpRepo.delete(existingDbP);
-						throw new BusinessException("Failed to connect to DataBase Schema "," Provide Valid Credential ");
+						throw new DBException("Failed to Update DBProfile, Please Provide valid credentials");
 					}
 				} catch (Exception e) {
 					System.out.println();
-					throw new BusinessException("Failed to connect", " Failed t connect to database");
+					throw new DBException("Failed to Update DBProfile, Please Provide valid credentials");
 				}  
 			}
-
-			try {
 				existingDbP = dbpRepo.save(existingDbP);
-			} catch (BusinessException e) {
-				e.getMessage();
-				throw new BusinessException("update DatabaseProfile ","Failed to Update DatabaseProfile " + e.getMessage());		
-			}
+			
 		}
 		return existingDbP;
 	}
 
 	//Getting DbProfile by profile name
 	@Override
-	public DatabaseProfile getDatabaseProfileByProfileName(String profileName) {
+	public DatabaseProfile getDatabaseProfileByProfileName(String profileName) throws CustomException {
 		DatabaseProfile dbp =	dbpRepo.findByProfileName(profileName);
+		if (dbp == null) {
+			throw new CustomException(profileName+" Not Found in database");
+		}
 		return dbp ;
 	}
 
 	//DELETING DATABASEPROFILE USING PROFILENAME
 	@Override
-	public void deleteDbProfile(String profileName) {
+	public void deleteDbProfile(String profileName) throws CustomException {
 		DatabaseProfile dbp = dbpRepo.findByProfileName(profileName);
 		if (dbp==null) {
-			throw new BusinessException("Failed to Delete DatabaseProfile ","profileName not found");		
-		}
+			throw new CustomException(profileName+" Not Found in database");		}
 		dbpRepo.delete(dbp);
+
+	}
+	@Override
+	public List getAllDbProfie() {
+		List<DatabaseProfile> dbp = dbpRepo.findAll();
+		return dbp;
 
 	}
 

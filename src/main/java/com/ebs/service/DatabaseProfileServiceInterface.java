@@ -1,9 +1,12 @@
 package com.ebs.service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import com.ebs.entity.DatabaseProfile;
 import com.ebs.exception.BusinessException;
+import com.ebs.exception.CustomException;
+import com.ebs.exception.DBException;
 
 public interface DatabaseProfileServiceInterface {
 
@@ -14,9 +17,10 @@ public interface DatabaseProfileServiceInterface {
 	DatabaseProfile createMysqlDbp (DatabaseProfile databaseProfile) throws Exception;
 	DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws Exception;
 
-	DatabaseProfile getDatabaseProfileByProfileName(String profileName);
-	DatabaseProfile updateDbProfile (String profileName, DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException, BusinessException;
-	void deleteDbProfile (String profileName);
+	DatabaseProfile getDatabaseProfileByProfileName(String profileName) throws CustomException;
+	DatabaseProfile updateDbProfile (String profileName, DatabaseProfile databaseProfile) throws CustomException, DBException;
+	void deleteDbProfile (String profileName) throws CustomException;
 	//Testing
 	String connection(String profileName) throws Exception;
+	List getAllDbProfie();
 }
