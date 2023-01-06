@@ -18,7 +18,7 @@ public interface DatabaseProfileServiceInterface {
 	DatabaseProfile createOracleDbp (DatabaseProfile databaseProfile) throws Exception;
 
 	DatabaseProfile getDatabaseProfileByProfileName(String profileName) throws CustomException;
-	DatabaseProfile updateDbProfile (String profileName, DatabaseProfile databaseProfile) throws CustomException, DBException;
+	DatabaseProfile updateDbProfile (String profileName, DatabaseProfile databaseProfile) throws Exception;
 	void deleteDbProfile (String profileName) throws CustomException;
 	//Testing
 	String connection(String profileName) throws Exception;

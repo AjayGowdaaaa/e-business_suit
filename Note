@@ -1,0 +1,29 @@
+public DatabaseProfile createMysqlDbp (DatabaseProfile db) throws BusinessException, Exception{
+		DatabaseProfile  databaseProfile=db;
+		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
+			throw new CustomException("DBProfile already Exsist in database");
+		}
+		//Setting DatabaseProfile attributes and creating url
+		//Connection 1 
+		if (	!(databaseProfile.getPortnumber()==0) &&
+				!(databaseProfile.getSchema()==null) ) {
+			String Url = mySqlConUrlGenerator(databaseProfile);
+			databaseProfile.setDbConnectionURL(Url);
+		}
+	//	databaseProfile  = dbpRepo.save(databaseProfile);
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");  
+			Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
+			if (connection != null) {
+				databaseProfile.setConnected(true);
+				databaseProfile  = dbpRepo.save(databaseProfile);
+			}else {
+				dbpRepo.delete(databaseProfile);
+				throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
+			}
+		} catch (CustomException e ) {
+			dbpRepo.delete(databaseProfile);
+			throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
+		}
+		return databaseProfile;
+	}

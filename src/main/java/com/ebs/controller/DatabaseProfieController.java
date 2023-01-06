@@ -17,6 +17,7 @@ import com.ebs.entity.DatabaseProfile;
 import com.ebs.exception.BusinessException;
 import com.ebs.exception.ControllerException;
 import com.ebs.exception.CustomException;
+import com.ebs.exception.DBException;
 import com.ebs.service.DatabaseProfileServiceInterface;
 
 @RestController
@@ -48,7 +49,19 @@ public class DatabaseProfieController {
 			return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
-
+	@PutMapping("/updateDbProfile/{profileName}")
+	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException {	
+		try {
+			DatabaseProfile dbProfile = service.updateDbProfile(profileName, databaseProfile);
+			return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
+		} catch (DBException e) {
+			DBException c = new DBException(e.getMessage());
+			return new ResponseEntity<String>(c.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			CustomException ce = new CustomException("Failed to Update DBProfile");
+			return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+		}
+	}
 
 //		@PostMapping("/createDbProfile/{db}")
 //		public void createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
@@ -87,20 +100,7 @@ public class DatabaseProfieController {
 		}
 	}
 
-	@PutMapping("/updateDbProfile/{profileName}")
-	public ResponseEntity<?> updateDbProfile(@PathVariable  String profileName ,@RequestBody DatabaseProfile databaseProfile) throws ClassNotFoundException, SQLException {	
-		try {
-			DatabaseProfile dbProfile = service.updateDbProfile(profileName, databaseProfile);
-			return new ResponseEntity<DatabaseProfile>(dbProfile, HttpStatus.CREATED);
-		} catch (CustomException e) {
-			CustomException c = new CustomException(e.getMessage());
-			return new ResponseEntity<String>(c.getMessage(), HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			ControllerException ce = new ControllerException("Failed to create DBProfile",
-					"Something went wrong");
-			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
-		}
-	}
+	
 
 	@DeleteMapping("/delete/{profileName}")
 	public ResponseEntity<?> deleteDbProfile(@PathVariable("profileName") String profileName) {
@@ -111,9 +111,8 @@ public class DatabaseProfieController {
 			CustomException c = new CustomException(e.getMessage());
 			return new ResponseEntity<String>(c.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			ControllerException ce = new ControllerException("Failed to create DBProfile",
-					"Something went wrong");
-			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
+			CustomException ce = new CustomException("Failed to create DBProfile");
+			return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
 	@GetMapping("/con/{profileName}")

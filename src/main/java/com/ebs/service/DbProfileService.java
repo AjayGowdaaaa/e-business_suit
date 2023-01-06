@@ -3,6 +3,7 @@ package com.ebs.service;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
@@ -113,7 +114,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 			String Url = mySqlConUrlGenerator(databaseProfile);
 			databaseProfile.setDbConnectionURL(Url);
 		}
-	//	databaseProfile  = dbpRepo.save(databaseProfile);
+		//	databaseProfile  = dbpRepo.save(databaseProfile);
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");  
 			Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
@@ -122,7 +123,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 				databaseProfile  = dbpRepo.save(databaseProfile);
 			}else {
 				dbpRepo.delete(databaseProfile);
-				throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
+				throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
 			}
 		} catch (CustomException e ) {
 			dbpRepo.delete(databaseProfile);
@@ -135,7 +136,7 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	//UPDATING DATABASE PROFILE USING PROFILENAME
 	@Override
-	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile) throws CustomException, DBException {
+	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile) throws BusinessException, Exception {
 		//	DatabaseProfile existingDbP = dbpRepo.findById(id).orElseThrow(() -> new BusinessException("profileName not exsits in Repository", "Please Enter valid profileName"));
 		DatabaseProfile existingDbP =dbpRepo.findByProfileName(profileName);
 		if (existingDbP == null) {
@@ -151,25 +152,22 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 			existingDbP.setPortnumber(databaseProfile.getPortnumber());
 			existingDbP.setSid(databaseProfile.getSid());
 			existingDbP.setDbConnectionURL(databaseProfile.getDbConnectionURL());
-			//Connection 1
 			if ( !(databaseProfile.getServerName()==null) && 
 					!(databaseProfile.getPortnumber()==0) &&
 					!(databaseProfile.getSid()==null) ) {
 				existingDbP.setDbConnectionURL(oracleConUrlGenerator(databaseProfile));
-			}
-			//dbpRepo.save(existingDbP);
-			//JDBC (Connecting DbProfile to Database
+			}			
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 				Connection connection=DriverManager.getConnection(existingDbP.getDbConnectionURL(), existingDbP.getDatabaseUserName(),existingDbP.getDatabaseUserPassword());  
-				if (!(connection == null)) {
+				if (connection != null) {
 					existingDbP.setConnected(true);
 					dbpRepo.save(existingDbP);
 				}else {
 					dbpRepo.delete(existingDbP);
 					throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
 				}
-			} catch (Exception e) {
+			} catch (CustomException e) {
 				e.getMessage();
 				throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
 			}  
@@ -182,14 +180,11 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 				existingDbP.setPortnumber(databaseProfile.getPortnumber());
 				existingDbP.setSchema(databaseProfile.getSchema());
 				existingDbP.setDbConnectionURL(databaseProfile.getDbConnectionURL());
-				//Connection 1
 				existingDbP.setDbConnectionURL(mySqlConUrlGenerator(databaseProfile));
 				System.out.println("generated url " +existingDbP.getDbConnectionURL());
-				//Connection 2
 				if (existingDbP.getPortnumber()== 0 && existingDbP.getServerName()==null && existingDbP.getSchema() == null  ) {
 					existingDbP.setDbConnectionURL(databaseProfile.getDbConnectionURL());
 				}
-				//JDBC (Connecting DbProfile to Database
 				try {
 					Class.forName("com.mysql.cj.jdbc.Driver");  		
 					Connection connection;
@@ -199,15 +194,14 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 						dbpRepo.save(existingDbP);
 					}else {
 						dbpRepo.delete(existingDbP);
-						throw new DBException("Failed to Update DBProfile, Please Provide valid credentials");
+						throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
 					}
-				} catch (Exception e) {
-					System.out.println();
-					throw new DBException("Failed to Update DBProfile, Please Provide valid credentials");
+				} catch (CustomException e) {
+					throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
 				}  
 			}
-				existingDbP = dbpRepo.save(existingDbP);
-			
+			existingDbP = dbpRepo.save(existingDbP);
+
 		}
 		return existingDbP;
 	}
