@@ -35,16 +35,16 @@ public class WebSecurityConfiguration {
 		return provider;
 	}
 	private static final String[] WHITE_LIST_URLS = {
-			"/dbp/**",
-			"/user/**"
+
 	};
 	private static final String[] USER_LIST_URLS = {
-			
+			"/dbp/**"
 	};
 	private static final String[] ADMIN_LIST_URLS = {
-			
+			"/user/**",
+			"/dbp/**"
 	};
-	
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
 	{
@@ -56,7 +56,8 @@ public class WebSecurityConfiguration {
 		.anyRequest()
 		.authenticated()
 		.and()
-		.httpBasic();
+	//	.httpBasic();
+		.formLogin();
 		return http.build();
 	}
 

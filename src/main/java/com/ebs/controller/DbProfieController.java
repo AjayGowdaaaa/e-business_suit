@@ -22,11 +22,10 @@ import com.ebs.service.DatabaseProfileServiceInterface;
 
 @RestController
 @RequestMapping("/dbp")
-public class DatabaseProfieController {
+public class DbProfieController {
 
 	@Autowired
 	private DatabaseProfileServiceInterface service;
-
 
 	@PostMapping("/createDbProfile/{db}")
 	public ResponseEntity<?> createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {

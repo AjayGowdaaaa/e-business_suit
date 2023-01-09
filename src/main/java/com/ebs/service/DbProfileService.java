@@ -8,59 +8,36 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.ebs.entity.DatabaseProfile;
+import com.ebs.entity.User;
 import com.ebs.exception.BusinessException;
 import com.ebs.exception.CustomException;
 import com.ebs.exception.DBException;
 import com.ebs.repository.DatabaseProfileRepository;
+import com.ebs.repository.UserRepository;
 
 @Service
 public class DbProfileService implements DatabaseProfileServiceInterface {
 
 	@Autowired
 	DatabaseProfileRepository dbpRepo;
-
-	@Override
-	public String connection(String profileName) throws Exception {
-		DatabaseProfile dbp = dbpRepo.findByProfileName(profileName);
-
-		Class.forName("oracle.jdbc.driver.OracleDriver");
-		System.out.println("registered driver successfully");
-		// Create the connection and assign to connection reference
-		// Connection
-		// con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:CUSTDB",
-		// "scott", "tiger");
-
-		Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.171:1521:vis", "pstarch",
-				"pstarch");
-		System.out.println("connection successsfully");
-		// create a statement through connection reference and assign to statement
-		// reference
-		Statement stmt = connection.createStatement();
-		System.out.println("statement object created successfully");
-		// call the executequery method through statement reference and pass the query
-		// as argument.
-		ResultSet rs = stmt.executeQuery("select * from OPTEBS_A4S_PROCESS");
-		System.out.println(rs.getFetchSize());
-		System.out.println("query is executed");
-		while (rs.next()) {
-			String i = rs.getString(1);
-			String str = rs.getString(2);
-			String str1 = rs.getString(3);
-			String i1 = rs.getString(4);
-			System.out.println(i + "\t" + str + "\t" + str1 + "\t" + i1);
-		}
-		return "Connected";
-	}
+	@Autowired
+	UserRepository userRepo;
+	@Autowired 
+	PasswordEncoder passwordEncoder;
 
 	@Override
 	public String mySqlConUrlGenerator(DatabaseProfile databaseProfile) {
 		databaseProfile.setAPI("jdbc");
 		databaseProfile.setDatabase("mysql");
-		String url = databaseProfile.getAPI() + ":" + databaseProfile.getDatabase() + "://"
-				+ databaseProfile.getServerName() + ":" + databaseProfile.getPortnumber() + "/"
-				+ databaseProfile.getSchema();
+		String url = databaseProfile.getAPI() + ":" + 
+				databaseProfile.getDatabase() + "://"+ 
+				databaseProfile.getServerName() + ":" + 
+				databaseProfile.getPortnumber() + "/"+ 
+				databaseProfile.getSchema();
 		return url;
 	}
 
@@ -68,37 +45,57 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	public String oracleConUrlGenerator(DatabaseProfile databaseProfile) {
 		databaseProfile.setAPI("jdbc");
 		databaseProfile.setDatabase("oracle:thin");
-		String url = databaseProfile.getAPI() + ":" + databaseProfile.getDatabase() + ":@"
-				+ databaseProfile.getServerName() + ":" + databaseProfile.getPortnumber() + ":"
-				+ databaseProfile.getSid();
+		String url = databaseProfile.getAPI() + ":" + 
+				databaseProfile.getDatabase() + ":@"+ 
+				databaseProfile.getServerName() + ":" + 
+				databaseProfile.getPortnumber() + ":"+ 
+				databaseProfile.getSid();
+
 		return url;
 	}
 
 	// CREATING DBPROFILE AND CONNECTING TO ORACLE DATABASE
 	@Override
 	public DatabaseProfile createOracleDbp(DatabaseProfile db) throws BusinessException, Exception {
+		db.setArchiveUnionUser(db.getArchiveUnionUser().toUpperCase());
+		db.setArchiveUserPassword(passwordEncoder.encode(db.getArchiveUserPassword()));
+		System.out.println(db.getArchiveUserPassword()+"-----------------------------");
 		DatabaseProfile databaseProfile = db;
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
 			throw new CustomException("DBProfile already Exsist in database");
+		}
+		if (db.getProfileName().isEmpty()) {
+			throw new CustomException("DBProfile Name can't be empty");
+		}else if (db.getProfileName().length()<3) {
+			throw new CustomException("DBProfile Name Should consist of minimum 3 character");
 		}
 		if (!(databaseProfile.getPortnumber() == 0) && !(databaseProfile.getSid() == null)) {
 			String Url = oracleConUrlGenerator(databaseProfile);
 			databaseProfile.setDbConnectionURL(Url);
 		}
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			Connection connection = DriverManager.getConnection(databaseProfile.getDbConnectionURL(),
-					databaseProfile.getDatabaseUserName(), databaseProfile.getDatabaseUserPassword());
-			if (!(connection == null)) {
-				databaseProfile.setConnected(true);
-				databaseProfile = dbpRepo.save(databaseProfile);
-			} else {
+		User user = userRepo.findByUserName(db.getArchiveUnionUser());
+		if (user == null) {
+			throw new CustomException("Invaid Archive Uninon UserName");
+		}
+	//	bCryptPasswordEncoder.encode()
+		if (user.getPassword()==(db.getArchiveUserPassword())) {
+			try {
+				Class.forName("oracle.jdbc.driver.OracleDriver");
+				Connection connection = DriverManager.getConnection(databaseProfile.getDbConnectionURL(),
+						databaseProfile.getDatabaseUserName(), databaseProfile.getDatabaseUserPassword());
+				if (!(connection == null)) {
+					databaseProfile.setConnected(true);
+					databaseProfile = dbpRepo.save(databaseProfile);
+				} else {
+					dbpRepo.delete(databaseProfile);
+					throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
+				}
+			} catch (CustomException e) {
 				dbpRepo.delete(databaseProfile);
 				throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
 			}
-		} catch (CustomException e) {
-			dbpRepo.delete(databaseProfile);
-			throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
+		}else {
+			throw new CustomException("Please provide valid User Credential");
 		}
 		return databaseProfile;
 	}
@@ -107,8 +104,16 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	@Override
 	public DatabaseProfile createMysqlDbp(DatabaseProfile db) throws BusinessException, Exception {
 		DatabaseProfile databaseProfile = db;
+		db.setArchiveUnionUser(db.getArchiveUnionUser().toUpperCase());
+		db.setArchiveUserPassword(passwordEncoder.encode(db.getArchiveUserPassword()));
+		System.out.println(db.getArchiveUserPassword()+"-----------------------------");
 		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
 			throw new CustomException("DBProfile already Exsist in database");
+		}
+		if (db.getProfileName().isEmpty()) {
+			throw new CustomException("DBProfile Name can't be empty");
+		}else if (db.getProfileName().length()<3) {
+			throw new CustomException("DBProfile Name Should consist of minimum 3 character");
 		}
 		// Setting DatabaseProfile attributes and creating url
 		// Connection 1
@@ -117,20 +122,31 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 			databaseProfile.setDbConnectionURL(Url);
 		}
 		// databaseProfile = dbpRepo.save(databaseProfile);
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			Connection connection = DriverManager.getConnection(databaseProfile.getDbConnectionURL(),
-					databaseProfile.getDatabaseUserName(), databaseProfile.getDatabaseUserPassword());
-			if (connection != null) {
-				databaseProfile.setConnected(true);
-				databaseProfile = dbpRepo.save(databaseProfile);
-			} else {
+		
+		User user = userRepo.findByUserName(db.getArchiveUnionUser());
+		System.out.println(user.getPassword()+"---------------------");
+		if (user == null) {
+			throw new CustomException("Invaid Archive Uninon UserName");
+		}
+		
+		if (user.getPassword().equals(db.getArchiveUserPassword())) {	
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				Connection connection = DriverManager.getConnection(databaseProfile.getDbConnectionURL(),
+						databaseProfile.getDatabaseUserName(), databaseProfile.getDatabaseUserPassword());
+				if (connection != null) {
+					databaseProfile.setConnected(true);
+					databaseProfile = dbpRepo.save(databaseProfile);
+				} else {
+					dbpRepo.delete(databaseProfile);
+					throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
+				}
+			} catch (CustomException e) {
 				dbpRepo.delete(databaseProfile);
-				throw new CustomException("Failed to Update DBProfile, Please Provide valid credentials");
+				throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
 			}
-		} catch (CustomException e) {
-			dbpRepo.delete(databaseProfile);
-			throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
+		}else {
+			throw new CustomException("Invalid Archive uninon user Password");
 		}
 		return databaseProfile;
 	}
@@ -139,9 +155,6 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 	@Override
 	public DatabaseProfile updateDbProfile(String profileName, DatabaseProfile databaseProfile)
 			throws BusinessException, Exception {
-		// DatabaseProfile existingDbP = dbpRepo.findById(id).orElseThrow(() -> new
-		// BusinessException("profileName not exsits in Repository", "Please Enter valid
-		// profileName"));
 		DatabaseProfile existingDbP = dbpRepo.findByProfileName(profileName);
 		if (existingDbP == null) {
 			throw new CustomException("DBProfile Not Exsist in database");
@@ -239,6 +252,39 @@ public class DbProfileService implements DatabaseProfileServiceInterface {
 			throw new CustomException("No Data Found");
 		}
 		return dbp;
+	}
+
+	@Override
+	public String connection(String profileName) throws Exception {
+		DatabaseProfile dbp = dbpRepo.findByProfileName(profileName);
+
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		System.out.println("registered driver successfully");
+		// Create the connection and assign to connection reference
+		// Connection
+		// con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:CUSTDB",
+		// "scott", "tiger");
+
+		Connection connection = DriverManager.getConnection("jdbc:oracle:thin:@192.168.0.171:1521:vis", "pstarch",
+				"pstarch");
+		System.out.println("connection successsfully");
+		// create a statement through connection reference and assign to statement
+		// reference
+		Statement stmt = connection.createStatement();
+		System.out.println("statement object created successfully");
+		// call the executequery method through statement reference and pass the query
+		// as argument.
+		ResultSet rs = stmt.executeQuery("select * from OPTEBS_A4S_PROCESS");
+		System.out.println(rs.getFetchSize());
+		System.out.println("query is executed");
+		while (rs.next()) {
+			String i = rs.getString(1);
+			String str = rs.getString(2);
+			String str1 = rs.getString(3);
+			String i1 = rs.getString(4);
+			System.out.println(i + "\t" + str + "\t" + str1 + "\t" + i1);
+		}
+		return "Connected";
 	}
 
 }

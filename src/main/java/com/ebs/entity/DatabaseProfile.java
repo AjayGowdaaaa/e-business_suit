@@ -25,7 +25,7 @@ public class DatabaseProfile {
 	//Database Validation
 	private String databaseUserName;
 	private String  databaseUserPassword;
-	//
+	//Archive user 
 	private String archiveUnionUser;
 	private String archiveUserPassword;
 	
