@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -36,6 +37,8 @@ public class GroupController {
 
 	@Autowired
 	private GroupServiceInterface service;
+	
+	
 
 	/*
 	 * New Group creating
@@ -74,20 +77,12 @@ public class GroupController {
 	}
 	
 	/*
-	 * Assigning the programs to the Group based on Id
+	 * Assigning the programs to the Group based on Group Name
 	 */
-	@PutMapping("/assignPrograms/{id}")
-	public ResponseEntity<?> assignPrograms( @RequestBody GroupData groupData,@PathVariable("id") Long id) {
-		try {
-			GroupData savedPrograms = service.assignPrograms(id, groupData);
-			return new ResponseEntity<GroupData>(savedPrograms, HttpStatus.CREATED);
-		}catch (BusinessException e) {
-			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
-			return new ResponseEntity<String>(ce.getErrorMessage(), HttpStatus.BAD_REQUEST);
-		} catch (Exception e) {
-			ControllerException ce = new ControllerException("Failed to Assign program","Something went wrong on Controller");
-			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
-		}
+	@PostMapping("/setAssignPrograms/{groupName}")
+	public GroupData getAssignPrograms( @PathVariable("groupName")  String groupName, @RequestParam String assignPrograms ) {
+		
+		return service.assignData(groupName,assignPrograms);
 	}
 	/*
 	 * Modify the Group Based on Id
@@ -143,6 +138,26 @@ public class GroupController {
 	}
 	
 	
+	/*
+	 * Fetching Group details by Id
+	 */
+	@GetMapping("/fetchGroup/{id}")
+	public ResponseEntity<?> getGroupById(@PathVariable("id") Long id) {
+		try {
+			GroupData groupData = service.getGroupById(id);
+			return new ResponseEntity<GroupData>(groupData, HttpStatus.ACCEPTED);
+		}catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<ControllerException>(ce, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ControllerException ce = new ControllerException("Failed to get Group","Something went wrong on Controller");
+			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	
+		
+	//@RequestParam 
 	
 	
 	
@@ -162,8 +177,19 @@ public class GroupController {
 	
 	
 	
-	
-	
+	@PostMapping("/assignPrograms/{id}")
+	public ResponseEntity<?> assignPrograms( @RequestBody GroupData groupData,  @PathVariable("id") Long id) {
+		try {
+			GroupData savedPrograms = service.assignPrograms(id, groupData);
+			return new ResponseEntity<GroupData>(savedPrograms, HttpStatus.CREATED);
+		}catch (BusinessException e) {
+			ControllerException ce = new ControllerException(e.getErrorCode(), e.getErrorMessage());
+			return new ResponseEntity<String>(ce.getErrorMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			ControllerException ce = new ControllerException("Failed to Assign program","Something went wrong on Controller");
+			return new ResponseEntity<ControllerException>(ce,HttpStatus.BAD_REQUEST);
+		}
+	}
 	
 	
 //	/*

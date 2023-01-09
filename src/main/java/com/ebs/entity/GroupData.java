@@ -2,10 +2,16 @@ package com.ebs.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -27,11 +33,11 @@ public class GroupData {
 	
 	private String groupName;
 	private String description;
-	/*
-	 * suppose we have more than one program associated with one group
-	 * for ex GL selection,delete,archive
-	 */
 	
-	private String assignPrograms;
+	
+	//private String assignPrograms;
+	 @ManyToOne
+	  @JoinColumn(name = "program_id")
+    private Programs programs;
 	
 }

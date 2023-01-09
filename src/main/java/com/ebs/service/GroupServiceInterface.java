@@ -27,7 +27,9 @@ public interface GroupServiceInterface {
 
 	Programs addprogram(Programs program);
 	
+	GroupData getGroupById(Long id);
 	
+	GroupData assignData(String groupName,String assignPrograms);
 	
 	
 	
