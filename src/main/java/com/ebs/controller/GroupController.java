@@ -80,7 +80,7 @@ public class GroupController {
 	 * Assigning the programs to the Group based on Group Name
 	 */
 	@PostMapping("/setAssignPrograms/{groupName}")
-	public GroupData getAssignPrograms( @PathVariable("groupName")  String groupName, @RequestParam String assignPrograms ) {
+	public GroupData addAssignPrograms( @PathVariable("groupName")  String groupName, @RequestParam String assignPrograms ) {
 		
 		return service.assignData(groupName,assignPrograms);
 	}
