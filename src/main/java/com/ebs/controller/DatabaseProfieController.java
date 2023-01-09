@@ -27,8 +27,6 @@ public class DatabaseProfieController {
 	@Autowired
 	private DatabaseProfileServiceInterface service;
 
-	//	@Autowired
-	//	private DatabaseProfileRepository databaseProfileRepository;
 
 	@PostMapping("/createDbProfile/{db}")
 	public ResponseEntity<?> createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
@@ -63,30 +61,6 @@ public class DatabaseProfieController {
 		}
 	}
 
-//		@PostMapping("/createDbProfile/{db}")
-//		public void createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
-//			String profile= databaseProfile.getProfileName();
-//			System.out.println(profile+"       ");
-//	
-//			db = db.toLowerCase();
-//			DatabaseProfile dbProfile = null;
-//			if (db.equals("mysql")) {
-//				List<DatabaseProfile> ls=	databaseProfileRepository.findAll();
-//				System.out.println(ls.size()+"       ");
-//				System.out.println(databaseProfile.getProfileName()+"       ");
-//				List<DatabaseProfile> listAfterValidation=	ls.stream().filter(column->column.getProfileName().equals(profile)).collect(Collectors.toList());	
-//				if(CollectionUtils.isEmpty(listAfterValidation)) {
-//					databaseProfileRepository.save(databaseProfile);
-//				}
-//				else {
-//					throw new CustomException("Already Existed");
-//				}			
-//			}else if (db.equals("oracle")) {
-//				//dbProfile = service.createOracleDbp(databaseProfile);
-//			}
-//		}
-
-
 	@GetMapping("/databaseProfile/{profileName}")
 	public ResponseEntity<?> getUserByUserName(@PathVariable("profileName") String profileName) {	
 		try {
@@ -100,13 +74,11 @@ public class DatabaseProfieController {
 		}
 	}
 
-	
-
 	@DeleteMapping("/delete/{profileName}")
 	public ResponseEntity<?> deleteDbProfile(@PathVariable("profileName") String profileName) {
 		try {
 			service.deleteDbProfile(profileName);
-			return new ResponseEntity<String>("profileName ---> Deleted Sucessfuly",HttpStatus.ACCEPTED);
+			return new ResponseEntity<String>(profileName+"---> Deleted Sucessfuly",HttpStatus.ACCEPTED);
 		} catch (CustomException e) {
 			CustomException c = new CustomException(e.getMessage());
 			return new ResponseEntity<String>(c.getMessage(), HttpStatus.BAD_REQUEST);
@@ -119,7 +91,6 @@ public class DatabaseProfieController {
 	public ResponseEntity<?> connection(@PathVariable("profileName") String profileName) throws Exception {    
 		try {
 			String rs =service.connection(profileName);
-
 			return new ResponseEntity<String>(rs, HttpStatus.ACCEPTED);
 		} catch (BusinessException e) {
 			e.printStackTrace();
@@ -133,7 +104,14 @@ public class DatabaseProfieController {
 	}
 	@GetMapping("/getalldbp")
 	public ResponseEntity<?> getAllDbProfie(){
-			List<DatabaseProfile> dbProfile = service.getAllDbProfie();		
-			return new ResponseEntity<List>(dbProfile, HttpStatus.ACCEPTED);
+		try {	List<DatabaseProfile> dbProfile = service.getAllDbProfie();		
+		return new ResponseEntity<List>(dbProfile, HttpStatus.ACCEPTED);
+		} catch (CustomException e) {
+			CustomException c = new CustomException(e.getMessage());
+			return new ResponseEntity<String>(c.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			CustomException ce = new CustomException("Failed to create DBProfile");
+			return new ResponseEntity<String>(e.getMessage(),HttpStatus.BAD_REQUEST);
+		}
 	}
 }

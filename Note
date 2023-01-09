@@ -1,29 +1,22 @@
-public DatabaseProfile createMysqlDbp (DatabaseProfile db) throws BusinessException, Exception{
-		DatabaseProfile  databaseProfile=db;
-		if (!(dbpRepo.findByProfileName(databaseProfile.getProfileName()) == null)) {
-			throw new CustomException("DBProfile already Exsist in database");
-		}
-		//Setting DatabaseProfile attributes and creating url
-		//Connection 1 
-		if (	!(databaseProfile.getPortnumber()==0) &&
-				!(databaseProfile.getSchema()==null) ) {
-			String Url = mySqlConUrlGenerator(databaseProfile);
-			databaseProfile.setDbConnectionURL(Url);
-		}
-	//	databaseProfile  = dbpRepo.save(databaseProfile);
-		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");  
-			Connection connection=DriverManager.getConnection(databaseProfile.getDbConnectionURL(), databaseProfile.getDatabaseUserName(),databaseProfile.getDatabaseUserPassword());  
-			if (connection != null) {
-				databaseProfile.setConnected(true);
-				databaseProfile  = dbpRepo.save(databaseProfile);
-			}else {
-				dbpRepo.delete(databaseProfile);
-				throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
-			}
-		} catch (CustomException e ) {
-			dbpRepo.delete(databaseProfile);
-			throw new CustomException("Failed to Create DBProfile, Please Provide valid credentials");
-		}
-		return databaseProfile;
-	}
+//		@PostMapping("/createDbProfile/{db}")
+//		public void createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
+//			String profile= databaseProfile.getProfileName();
+//			System.out.println(profile+"       ");
+//	
+//			db = db.toLowerCase();
+//			DatabaseProfile dbProfile = null;
+//			if (db.equals("mysql")) {
+//				List<DatabaseProfile> ls=	databaseProfileRepository.findAll();
+//				System.out.println(ls.size()+"       ");
+//				System.out.println(databaseProfile.getProfileName()+"       ");
+//				List<DatabaseProfile> listAfterValidation=	ls.stream().filter(column->column.getProfileName().equals(profile)).collect(Collectors.toList());	
+//				if(CollectionUtils.isEmpty(listAfterValidation)) {
+//					databaseProfileRepository.save(databaseProfile);
+//				}
+//				else {
+//					throw new CustomException("Already Existed");
+//				}			
+//			}else if (db.equals("oracle")) {
+//				//dbProfile = service.createOracleDbp(databaseProfile);
+//			}
+//		}

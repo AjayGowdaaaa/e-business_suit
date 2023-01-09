@@ -22,5 +22,5 @@ public interface DatabaseProfileServiceInterface {
 	void deleteDbProfile (String profileName) throws CustomException;
 	//Testing
 	String connection(String profileName) throws Exception;
-	List getAllDbProfie();
+	List getAllDbProfie() throws CustomException;
 }

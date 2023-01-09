@@ -28,17 +28,15 @@ public class UserService implements UserServiceInterface {
 			return defaultUser;
 		}else {
 			return null;
-		}
-		
-		
+		}	
 	}
 
 	@Override
 	public User register(User user) {
-		if (userRepo.findByUserName("admin")==null) {
-			creatingDefautUser();
-		}
-		
+//		if (userRepo.findByUserName("admin")==null) {
+//			creatingDefautUser();
+//		}
+//		
 		System.out.println("Register Method Calling");
 		if (!(userRepo.findByEmail(user.getEmail())==null)) {
 			throw new DuplicateKeyException("Email ID Already Exsists");
