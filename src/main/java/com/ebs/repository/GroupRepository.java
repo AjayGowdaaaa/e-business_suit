@@ -24,4 +24,7 @@ public interface GroupRepository extends JpaRepository<GroupData, Long>{
 	 */
 	@Query("SELECT entity.assignPrograms FROM  GroupData entity where entity.groupName = :groupName")
 	List<List> findprogram(String groupName);
+	
+	
+	
 }

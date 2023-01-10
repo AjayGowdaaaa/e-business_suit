@@ -21,5 +21,5 @@ public class Programs {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
-	private ArrayList<String> availablePrograms;
+	private String availablePrograms;
 }

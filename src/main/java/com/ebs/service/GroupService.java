@@ -25,6 +25,11 @@ public class GroupService implements GroupServiceInterface{
 	ProgramRepository programRepository;
 
 
+	
+	
+	public GroupService(GroupRepository groupRepository2) {
+		// TODO Auto-generated constructor stub
+	}
 	/*
 	 * Creating a group, if Group is already exist in the database it shows exception
 	 */
