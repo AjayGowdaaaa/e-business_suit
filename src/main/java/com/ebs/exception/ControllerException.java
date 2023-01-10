@@ -36,5 +36,4 @@ public class ControllerException extends RuntimeException{
 		return serialVersionUID;
 	}
 	
-	
 }

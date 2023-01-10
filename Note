@@ -1,0 +1,22 @@
+//		@PostMapping("/createDbProfile/{db}")
+//		public void createDbProfile(@PathVariable("db") String db ,@RequestBody DatabaseProfile databaseProfile) throws Exception {
+//			String profile= databaseProfile.getProfileName();
+//			System.out.println(profile+"       ");
+//	
+//			db = db.toLowerCase();
+//			DatabaseProfile dbProfile = null;
+//			if (db.equals("mysql")) {
+//				List<DatabaseProfile> ls=	databaseProfileRepository.findAll();
+//				System.out.println(ls.size()+"       ");
+//				System.out.println(databaseProfile.getProfileName()+"       ");
+//				List<DatabaseProfile> listAfterValidation=	ls.stream().filter(column->column.getProfileName().equals(profile)).collect(Collectors.toList());	
+//				if(CollectionUtils.isEmpty(listAfterValidation)) {
+//					databaseProfileRepository.save(databaseProfile);
+//				}
+//				else {
+//					throw new CustomException("Already Existed");
+//				}			
+//			}else if (db.equals("oracle")) {
+//				//dbProfile = service.createOracleDbp(databaseProfile);
+//			}
+//		}

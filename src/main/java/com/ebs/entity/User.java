@@ -1,14 +1,9 @@
 package com.ebs.entity;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import org.springframework.security.core.GrantedAuthority;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -25,6 +20,17 @@ public class User {
 	private String email;
 	private String password;
 	private String role;
+	
+	public User(Long id, String userName, String email, String password, String role) {
+		super();
+		this.id = id;
+		this.userName = userName;
+		this.email = email;
+		this.password = password;
+		this.role = role;
+	}
+
+	
 	public Long getId() {
 		return id;
 	}
@@ -59,14 +65,5 @@ public class User {
 		super();
 		
 	}
-	public User(Long id, String userName, String email, String password, String role) {
-		super();
-		this.id = id;
-		this.userName = userName;
-		this.email = email;
-		this.password = password;
-		this.role = role;
-	}
-	
-	
+
 }

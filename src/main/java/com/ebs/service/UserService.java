@@ -13,9 +13,29 @@ public class UserService implements UserServiceInterface {
 	@Autowired
 	UserRepository userRepo;
 
+	public User creatingDefautUser() {
+		User defaultUser=null;
+		User u = userRepo.findByUserName("admin");
+		User id = userRepo.findById(1L).get();
+		System.out.println("FIND BY USERNAME"+u);
+		System.out.println("FIND BY ID"+id);
+		System.out.println(u);
+		if ((u ==null && id==null)) {
+			System.out.println("Creating DEFAULT USER ***********************************************************************************************************************************************************");
+			 defaultUser = new User(0L, "admin@gamil.com", "admin", "admin", "ROLE_ADMIN");
+			defaultUser=	userRepo.save(defaultUser);
+			return defaultUser;
+		}else {
+			return null;
+		}	
+	}
 
 	@Override
 	public User register(User user) {
+//		if (userRepo.findByUserName("admin")==null) {
+//			creatingDefautUser();
+//		}
+//		
 		System.out.println("Register Method Calling");
 		if (!(userRepo.findByEmail(user.getEmail())==null)) {
 			throw new DuplicateKeyException("Email ID Already Exsists");
@@ -52,7 +72,7 @@ public class UserService implements UserServiceInterface {
 		userRepo.delete(exsistingUser);	
 	}
 
-	@Override
+
 	public User getUserById(Long id) {
 		User user = userRepo.findById(id).get();
 		return user;
@@ -70,5 +90,4 @@ public class UserService implements UserServiceInterface {
 		User user = userRepo.findByEmail(email);
 		return user;
 	}
-
 }

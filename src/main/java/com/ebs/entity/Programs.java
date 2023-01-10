@@ -1,7 +1,5 @@
 package com.ebs.entity;
 
-import java.util.ArrayList;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,5 +19,17 @@ public class Programs {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	
+<<<<<<< HEAD
 	private String availablePrograms;
+=======
+//	@ManyToOne
+//    @JoinColumn(name="id")
+//    private GroupData groupData;
+	
+
+	private String availablePrograms;
+	
+	
+>>>>>>> 78841a2c7ba42b4fd914a350175ca4618a50a131
 }
+
