@@ -23,4 +23,6 @@ public interface DatabaseProfileServiceInterface {
 	//Testing
 	String connection(String profileName) throws Exception;
 	List getAllDbProfie() throws CustomException;
+	List mysqlUrlSeperator(String url);
+	List oracleUrlSeperator(String url);
 }

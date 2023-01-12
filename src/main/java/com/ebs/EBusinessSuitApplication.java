@@ -24,5 +24,6 @@ public class EBusinessSuitApplication {
 			user.setRole("ROLE_ADMIN");
 			userRepo.save(user);
 		}
+		
 	}
 }
